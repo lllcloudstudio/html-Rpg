@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Iframe Example</title>
+    <style>
+        /* Make iframe responsive */
+        .iframe-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+        }
+        .iframe-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none; /* Remove default border */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Embedding a Webpage with Iframe</h1>
+
+    <div class="iframe-container">
+        <iframe 
+            src="https://www.example.com" 
+            title="Example Website"
+            loading="lazy"
+            allowfullscreen
+            sandbox="allow-scripts allow-same-origin allow-popups"
+            referrerpolicy="no-referrer">
+        </iframe>
+    </div>
+
+    <p>
+        The above iframe embeds <code>https://www.example.com</code> into this page.
+        The <code>sandbox</code> attribute adds security restrictions, and 
+        <code>loading="lazy"</code> improves performance.
+    </p>
+
+</body>
+</html>
