@@ -1,0 +1,16 @@
+-- 1. (Optional) Create a clean table if it exists, or skip this line to preserve existing data
+DROP TABLE IF EXISTS your_table_name;
+
+-- 2. Create the table structure
+CREATE TABLE your_table_name (
+    id SERIAL PRIMARY KEY,                          -- Auto-incrementing unique ID for each entry
+    user_text TEXT NOT NULL,                        -- Stores the string from your HTML text box
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() -- Automatically logs the exact date and time
+);
+
+-- 3. (Optional) Insert a test row to verify everything works
+INSERT INTO your_table_name (user_text) 
+VALUES ('Hello from the database! Setup successful.');
+
+-- 4. Verify your table structure and test data
+SELECT * FROM your_table_name;
