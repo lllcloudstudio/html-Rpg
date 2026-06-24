@@ -1,0 +1,206 @@
+# Install required packages R not loaded to vsv terminal not-installed
+
+#library(RPostgres)
+library(DBI)
+library(RMySQL)
+
+
+# Establish connection Opt 1 
+# MySQL connection  
+# Create a driver
+drv <- MySQL() # not postgre or RMariadb
+# Connection parameters
+host <- "localhost"   # or "localhost"
+port <- 3306          # default MySQL port
+user <- "root"
+password <- Sys.getenv("MYSQL_PASS") # password <- ""
+dbname <- "sakila"
+# Connection to a MySQL database
+con <- tryCatch({
+  dbConnect(
+    drv,
+    host = host,
+    port = port,
+    user = user,
+    password = password,
+    dbname = dbname
+  )
+}, error = function(e) {
+  stop("Database connection failed: ", e$message)
+})
+
+query <- "SELECT * FROM actor" # example if actor
+results <- NULL
+tryCatch({
+    results <- dbGetQuery(con, query)
+    message("✅ Query executed successfully.")
+}, error = function(e) {
+    stop("❌ Query failed: ", e$message)
+})
+# Display results
+print(results)
+# Always disconnect after use
+if (!is.null(con)) {
+    dbDisconnect(con)
+    message("🔌 Disconnected from database.")
+}
+
+#dbWriteTable(con, "my_table", dynamic_data, overwrite = TRUE) # to connect to binary file and view as not db "my_table"
+#dbListTables(con)  # list table
+#dbGetQuery(con, "SELECT * FROM my_table") # view (print) and or query db as my_table
+# List tables
+tables <- dbListTables(con) # 1 table, how multiple tables?
+print(tables) # connects to local mysql database but recommends using rmariadb to query
+# Disconnect
+dbDisconnect(con)
+dbUnloadDriver(drv) # verified closes R session
+
+# Establish connection Opt 2
+# PostgreSQL connection  
+#con <- dbConnect(
+  #RPostgres::Postgres(),
+  #dbname = "your_database_name",
+  #host = "localhost",
+  #port = 5432, # 3306
+  #user = "your_username",
+  #password = "your_password"
+#)
+
+# Read the table containing your HTML data into a dataframe
+#my_data <- dbGetQuery(con, "SELECT * FROM your_table_name")
+
+# View the data
+#View(my_data)
+
+# Close the connection
+#dbDisconnect(con)
+
+# Establish Connection Opt 3
+# memory non-server sqlite , view with R libs
+
+# Load DBI package
+library(DBI)
+
+# Example: Connect to an SQLite database (replace with your DB connection)
+# For MySQL/PostgreSQL, use RMySQL::dbConnect() or RPostgres::dbConnect() OK--
+con <- dbConnect(RSQLite::SQLite(), ":memory:")
+
+# Example: Create a sample table
+dbExecute(con, "CREATE TABLE employees (id INTEGER, name TEXT)")
+dbExecute(con, "INSERT INTO employees VALUES (1, 'Alice'), (2, 'Bob')")
+
+# 1. List all tables in the connection
+tables <- dbListTables(con)
+print(tables)
+
+# 2. Select all rows from each table
+for (tbl in tables) {
+  # Use dbReadTable for a full table read
+  data <- dbReadTable(con, tbl)
+  cat("\nData from table:", tbl, "\n")
+  print(data)
+}
+
+# Or, if you want to run a raw SQL query:
+if (length(tables) > 0) {
+  query <- paste0("SELECT * FROM ", tables[1])
+  result <- dbGetQuery(con, query)
+  cat("\nResult from first table:\n")
+  print(result)
+}
+
+# Always disconnect when done
+dbDisconnect(con)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#
+# Install required packages if not already installed
+# install.packages("DBI")
+# install.packages("RMariaDB")  # Recommended over RMySQL
+
+#library(DBI)
+#library(RMariaDB)  # Works with MySQL and MariaDB
+
+# Connection parameters
+#host <- "127.0.0.1"   # or "localhost"
+#port <- 3306          # default MySQL port
+#user <- "your_username"
+#password <- "your_password"
+#dbname <- "your_database"
+
+# Establish connection with error handling
+#con <- tryCatch({
+  #dbConnect(
+    #RMariaDB::MariaDB(),
+    #host = host,
+    #port = port,
+    #user = user,
+    #password = password,
+    #dbname = dbname
+  #)
+#}, error = function(e) {
+  #stop("Database connection failed: ", e$message)
+#})
+
+# Example query (read-only)
+#query <- "SELECT * FROM your_table LIMIT 10;"
+
+# Send query and fetch results
+#result <- tryCatch({
+  #dbGetQuery(con, query)
+#}, error = function(e) {
+  #stop("Query execution failed: ", e$message)
+#})
+
+# Display results
+#print(result)
+
+# Always disconnect when done
+#dbDisconnect(con)

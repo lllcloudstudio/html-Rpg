@@ -1,0 +1,20 @@
+# plumber1.R
+
+library(plumber)
+
+#* @apiTitle HTML to Plumber POST API
+
+#* Process data submitted from the HTML form
+#* @post /process-data
+function(user_name) {
+  # Return a response that the HTML form can display
+  list(
+    status = "Success",
+    message = paste0("Hello, ", user_name, "! Your data was received by R.")
+  )
+}
+
+
+library(plumber)
+print(message)
+pr("plumber.R") %>% pr_run(port = 8000)

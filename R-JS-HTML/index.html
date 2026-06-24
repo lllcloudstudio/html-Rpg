@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HTML to R Connector</title>
+</head>
+<body>
+
+  <!-- Input Form -->
+  <form id="textForm">
+    <label for="userInput">Enter text for R:</label>
+    <input type="text" id="userInput" name="userInput" required>
+    <button type="submit">Submit</button>
+  </form>
+
+  <!-- Output Display -->
+  <div id="responseOutput" style="margin-top: 20px; font-weight: bold;"></div>
+
+  <script>
+    const form = document.getElementById('textForm');
+    const outputDiv = document.getElementById('responseOutput');
+
+    form.addEventListener('submit', async function(event) {
+      event.preventDefault(); // Stop page refresh
+
+      // Extract input value
+      const formData = new FormData(form);
+      const textValue = formData.get('userInput');
+
+      try {
+        // FETCH to R Plumber API
+        const response = await fetch('http://localhost:8000/process-text', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ userInput: textValue })
+        });
+
+        // Parse and display response
+        const data = await response.json();
+        outputDiv.textContent = data.result;
+
+      } catch (error) {
+        console.error('Error:', error);
+        outputDiv.textContent = 'Failed to connect to R script.';
+      }
+    });
+  </script>
+
+</body>
+</html>

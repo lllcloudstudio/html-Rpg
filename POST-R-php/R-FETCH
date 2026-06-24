@@ -1,0 +1,17 @@
+# Install.packages("DBI")
+# Install.packages("RMySQL")
+library(DBI)
+library(RMySQL) 
+
+# Establish the database connection
+con <- dbConnect(MySQL(), 
+                 dbname = "database_name", 
+                 host = "localhost", 
+                 user = "username", 
+                 password = "password")
+
+# Retrieve data into R
+my_data <- dbGetQuery(con, "SELECT * FROM my_table")
+
+# Disconnect
+dbDisconnect(con)

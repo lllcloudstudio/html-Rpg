@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MySQL to R to HTML</title>
+    <style>
+        table, th, td { border: 1px solid black; border-collapse: collapse; padding: 8px; }
+    </style>
+</head>
+<body>
+    <h2>Enter SQL Query</h2>
+    <textarea id="sqlQuery" rows="4" cols="50" placeholder="SELECT * FROM my_table LIMIT 10;"></textarea>
+    <br>
+    <button onclick="executeQuery()">Execute</button>
+
+    <h3>Results</h3>
+    <table id="resultTable">
+        <thead id="tableHead"></thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+
+    <script>
+        async function executeQuery() {
+            const queryText = document.getElementById('sqlQuery').value;
+
+            try {
+                // POST to R Plumber API
+                const response = await fetch('http://localhost:8000/query', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: queryText })
+                });
+
+                if (!response.ok) throw new Error('Query execution failed');
+
+                const data = await response.json();
+                renderTable(data);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error running query. Check console for details.');
+            }
+        }
+
+        function renderTable(data) {
+            const tableHead = document.getElementById('tableHead');
+            const tableBody = document.getElementById('tableBody');
+            
+            tableHead.innerHTML = '';
+            tableBody.innerHTML = '';
+
+            if (data.length === 0) return;
+
+            // Generate Table Headers
+            const headers = Object.keys(data[0]);
+            let headerRow = '<tr>';
+            headers.forEach(h => headerRow += `<th>${h}</th>`);
+            headerRow += '</tr>';
+            tableHead.innerHTML = headerRow;
+
+            // Generate Table Rows
+            data.forEach(row => {
+                let tr = '<tr>';
+                headers.forEach(h => tr += `<td>${row[h]}</td>`);
+                tr += '</tr>';
+                tableBody.innerHTML += tr;
+            });
+        }
+    </script>
+</body>
+</html>
