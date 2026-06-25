@@ -15,6 +15,4 @@ function(user_name) {
 }
 
 
-library(plumber)
-print(message)
-pr("plumber.R") %>% pr_run(port = 8000)
+
