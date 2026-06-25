@@ -3,14 +3,14 @@
 library(plumber)
 
 #* @apiTitle HTML to Plumber POST API
-
+#* user_name to username
 #* Process data submitted from the HTML form
-#* @post /process-data
-function(user_name) {
+#* @post /process-text
+function(username) {
   # Return a response that the HTML form can display
   list(
     status = "Success",
-    message = paste0("Hello, ", user_name, "! Your data was received by R.")
+    message = paste0("Hello, ", username, "! Your data was received by R.")
   )
 }
 
