@@ -2,21 +2,16 @@ library(plumber)
 library(tidyverse)
 library(magrittr)
 library(dplyr)
+library(DBI)
+library(RMySQL)
 
-file <- "migraine.csv" # ref before #*
-
-if (file.exists(file)) {
-  df <- read_csv(file)
-} else {
-df <- tibble(date=as.POSIXct(character())) # df read 6; establish type no rows yet 
-}
-
-#* @apiTitle Migraine logger
-#* @apiDescription A simple API to log migraine events
+#* @apiTitle iris web 
+#* @apiDescription A simple API to iris data
 
 #* Return HTML content
 #* @get /
 #* @serializer html
+
 function() {
   
   # Return HTML code with the log button
@@ -28,7 +23,7 @@ function() {
      </head>
      <body>
        <h1>Migraine Logger</h1>
-       <button id="submit">Oh No, Migraine Today!</button>
+       <button id="submit">R iris data table</button>
        <div id="result" style="display: none;"></div>
        
       <script>
@@ -52,21 +47,50 @@ function() {
      </body>
      </html>
      '
-  return(html_content) # returned since no new page to display nor ajax ?
+  return(html_content)
 }
+
+
 
 #* logging 
 #* @post /log
 function(){
-  date_now <- tibble(date=Sys.time())
-  df <<- rbind(df,date_now)
-  write_csv(df, "migraine.csv")
-  list(paste0("you have logged ", date_now$date[1], " to migraine.csv"))
+drv <- MySQL() # not postgre or RMariadb
+# Connection parameters
+host <- "localhost"   # or "localhost"
+port <- 3306          # default MySQL port
+user <- "root"
+password <-'189999'  # 
+dbname <- "sakila"
+con <- tryCatch({
+  dbConnect(
+    drv,
+    host = host,
+    port = port,
+    user = user,
+    password = password,
+    dbname = dbname
+  )
+}, error = function(e) {
+  stop("Database connection failed: ", e$message)
+})
+query <- "SELECT * FROM actor" # example if actor
+results <- NULL
+tryCatch({
+    results <- dbGetQuery(con, query)
+    message("✅ Query executed successfully.")
+}, error = function(e) {
+    stop("❌ Query failed: ", e$message)
+})
+# Display results
+print(results) # check
+table.name='dbtable.csv'
+list(paste0("sakila data table saved as ", table.name)) 
 }
 
 #* download data
 #* @get /download
 #* @serializer csv
 function(){
-  df
+  results# simmply results downloads iris table, not sql
 }
