@@ -20,19 +20,23 @@
     </table>
 
     <script>
+        // onclick function add to test-5-plumber.R View button
         async function executeQuery() {
+            // try: USE sakila; SELECT * FROM actor;
+            // Parse??
             const queryText = document.getElementById('sqlQuery').value;
 
             try {
                 // POST to R Plumber API
+                // ??
                 const response = await fetch('http://localhost:8000/query', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ query: queryText })
                 });
-
+                // ??
                 if (!response.ok) throw new Error('Query execution failed');
-
+                // data variable 
                 const data = await response.json();
                 renderTable(data);
             } catch (error) {
