@@ -123,31 +123,31 @@ extract_after_first_semicolon <- function(query) {
 #########################################
 
 
-#readRenviron("/Users/aflac/Documents/GitHub/.env")
+readRenviron("/Users/aflac/Documents/GitHub/.env")
 
 
 #########################################
   # Connect to MySQL
-  drv=MySQL()
+  drv=RMySQL::MySQL()
   #con <- NULL # Initialize connection ?
   tryCatch({
-    con <- dbConnect(
-      drv,
-      dbname   = extract_db_name(query), #sakila
-      host     = "localhost",
-      port     = 3306,
-      user     = "root",
-      password = "189999"
-    )
+    #con <- dbConnect(
+      #drv,
+      #dbname   = extract_db_name(query), #sakila
+      #host     = "localhost",
+      #port     = 3306,
+      #user     = "root",
+      #password = "189999"
+    #)
 
-#con=dbConnect(
-  #drv,
-  #host=Sys.getenv("DB_HOST"),
-  #port=Sys.getenv("DB_PORT"),
-  #user=Sys.getenv("DB_USER"),
-  #password=Sys.getenv("DB_PASSWORD"),
-  #dbname=Sys.getenv("DB_NAME")
-#)
+con=DBI::dbConnect(
+  drv,
+  host=Sys.getenv("DB_HOST"),
+  port=Sys.getenv("DB_PORT"),
+  user=Sys.getenv("DB_USER"),
+  password=Sys.getenv("DB_PASSWORD"),
+  dbname=extract_db_name(query)
+)
     
     # Run query
     df <- dbGetQuery(con, extract_after_first_semicolon(query)) # query
