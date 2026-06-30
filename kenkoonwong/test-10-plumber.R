@@ -44,7 +44,23 @@ html_content <- '
       button:hover { background: #0056b3; }
     </style>
 
-    <input type="text" id="uploaded_file_path" placeholder="Enter path to file" style="width:400px;">
+<!-- No button 1132 6/30:     <input type="text" id="uploaded_file_path" placeholder="Enter path to file" style="width:400px;">  --> 
+
+<input type="file" id="fileUpload" >
+<button id="fileUploadBtn" type=‘submit’>Upload and Save</button> <!-- Not nece. a button -->
+
+<script>document.getElementById("fileUploadBtn").addEventListener("click", function() {
+  if (fileInput.files.length > 0) {
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const fileContent = e.target.result;
+      console.log("File Content:", fileContent);
+    };
+    reader.readAsText(file);
+  }
+ });</script>
+
 
     <div class=‘container’>
       <h2>Upload CSV to Database</h2>
@@ -52,13 +68,16 @@ html_content <- '
       <form action=‘/upload’ method=‘POST’ enctype=‘multipart/form-data’>
         <label for=‘csv_file’>Select a CSV file:</label>
         <input type=‘file’ id=‘csv_file’ name=‘file’ accept=‘.csv’ required />
-        <button type=‘submit’>Upload and Save</button>
+        <button id="uploadBtn" type=‘submit’>Upload and Save</button>
       </form>
     </div>
 
-
-
-
+<!-- path/to/file/upload not sqlQuery-->
+    <script>
+        document.getElementById("uploadBtn").addEventListener("click", function() {
+            const file_0_contents = document.getElementById("sqlQuery").value.trim(); <!-- -->
+        });
+    </script>
 
     <script>
         document.getElementById("downloadBtn").addEventListener("click", function() {
@@ -71,7 +90,6 @@ html_content <- '
         });
     </script>
 
-
     <script>
     // import {DataTable} from "simple-datatables";
     document.getElementById("viewTable").addEventListener("click", function() {
@@ -83,11 +101,8 @@ html_content <- '
     </script>
 
 
+    <input type="text" id="csv_data" placeholder="Enter Comma Separated Values" style="width:600px;">
 
-
-
-
-	
 
 
 
@@ -292,7 +307,7 @@ extract_after_first_semicolon <- function(tableQuery) {
 
 # Create/connect to SQLite DB (replace with MySQL/Postgres if needed)
 #con <- dbConnect(RSQLite::SQLite(), "data_store.sqlite")
-con <- dbConnect(RSQLite::SQLite(), ":memory:")
+#con <- dbConnect(RSQLite::SQLite(), ":memory:")
 
 # Ensure table exists (adjust schema to your CSV structure)
 #dbExecute(con, "
@@ -304,8 +319,9 @@ con <- dbConnect(RSQLite::SQLite(), ":memory:")
 #)")
 
 #* Upload CSV and save to DB
-#* @param csv_file The CSV file to upload
-#* @post /upload_csv
+#* @param file The CSV file to upload
+#* @post file
+#* @serializer contentType list(type="text/html")
 function(file) {
   tryCatch({
     # Save uploaded file temporarily

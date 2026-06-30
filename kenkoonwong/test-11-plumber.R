@@ -54,6 +54,8 @@ curl -X POST “http://localhost:8000/upload” -F “file=@/path/to/your/file.c
 ####################################################################################
 #* Process the HTML Form Upload
 #* @post /upload
+#### add 6/30/2026 1:43
+#* @param query
 #* @serializer html
 
 

@@ -135,7 +135,7 @@ extract_after_first_semicolon <- function(query) {
       drv,
       dbname   = extract_db_name(query), #sakila
       host     = "localhost",
-      port     = 3306,
+      port     = 3306, #3306 db connection
       user     = "root",
       password = "189999"
     )
@@ -232,7 +232,7 @@ extract_after_first_semicolon <- function(tableQuery) {
       drv,
       dbname   = extract_db_name(tableQuery), #sakila
       host     = "localhost",
-      port     = 3306,
+      port     = 3306, #3306 connection sql
       user     = "root",
       password = "189999"
     )
