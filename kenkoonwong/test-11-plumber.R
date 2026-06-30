@@ -46,3 +46,98 @@ function(req) {
 
 
 curl -X POST “http://localhost:8000/upload” -F “file=@/path/to/your/file.csv”
+
+
+
+#######################################################################################
+#############################################################################################
+####################################################################################
+#* Process the HTML Form Upload
+#* @post /upload
+#* @serializer html
+
+
+################################################################
+function(req, res) {
+  # Parse the incoming multipart form data
+  multipart <- mime::parse_multipart(req)
+  
+  # Validation: Check if a file was actually uploaded
+  if (is.null(multipart$file)) {
+    res$status <- 400
+    return("<h3>Error: No file selected.</h3><a href=‘/‘>Go Back</a>")
+  }
+  
+  # Extract temporary file path and actual file name
+  tmp_file_path <- multipart$file$datapath
+  original_name <- multipart$file$name
+
+    con <- dbConnect(
+      drv, # re-assign? 
+      dbname   = extract_db_name(query), #sakila
+      host     = "localhost",
+      port     = 3306,
+      user     = "root",
+      password = "189999"
+    )
+
+    con <- dbConnect(
+      drv, # re-assign? 
+      dbname   = extract_db_name(query), #sakila
+      host     = "localhost",
+      port     = 3306,
+      user     = "root",
+      password = "189999"
+    )
+
+
+
+
+
+  # Read data and write to database safely
+  tryCatch({
+    # Read the temporary CSV file
+    uploaded_data <- readr::read_csv(tmp_file_path)
+    
+    # Append data frame into the database table
+
+    dbWriteTable(
+      conn = con, 
+      name = "uploaded_records", #########################
+      value = uploaded_data, 
+      append = TRUE, 
+      row.names = FALSE
+    )
+    
+    # Return a success message in HTML format
+    return(paste0(
+      "<h3>Success!</h3>",
+      "<p>Successfully inserted <strong>", nrow(uploaded_data), "</strong> rows ",
+      "from <em>", original_name, "</em> into the database.</p>",
+      "<a href=‘/‘>Upload another file</a>"
+    ))
+
+  }, error = function(e) {
+    # Fail-safe error
+res$status <- 500 
+return(paste0("<h3>Database Error</h3><p>", e$message, "</p><a href='/>Go Back</a>")) }) }
+
+# write_delim(data,'titanic.csv',delim=',')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

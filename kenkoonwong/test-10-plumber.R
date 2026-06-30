@@ -1,10 +1,17 @@
 library(plumber)
+library(dplyr)
 library(DBI)
 library(RMySQL)
 library(tidyverse)
 library(kableExtra)
 library(knitr)
 library(utils)
+library(httr)
+library(DBI)
+library(RSQLite)
+library(readr)
+
+
 
 #* @apiTitle 
 #* @apiDescription
@@ -24,14 +31,9 @@ html_content <- '
 </head>
 <body>
     <h2>Run SQL Query and Download CSV</h2>
-
-
     <input type="text" id="sqlQuery" placeholder="Enter SQL query" style="width:400px;">
     <button id="downloadBtn">Download CSV</button> 
-
     <button id= "viewTable" onclick="executeQuery"> View Table </button> <!-- not id="sqlQuery" -->
-
-
 
     <style>
       body { font-family: Arial, sans-serif; margin: 40px; background: #f4f4f9; }
@@ -42,11 +44,7 @@ html_content <- '
       button:hover { background: #0056b3; }
     </style>
 
-
-
-
-
-
+    <input type="text" id="uploaded_file_path" placeholder="Enter path to file" style="width:400px;">
 
     <div class=‘container’>
       <h2>Upload CSV to Database</h2>
@@ -290,94 +288,54 @@ extract_after_first_semicolon <- function(tableQuery) {
   })
 }
 
+####################################################################################
 
+# Create/connect to SQLite DB (replace with MySQL/Postgres if needed)
+#con <- dbConnect(RSQLite::SQLite(), "data_store.sqlite")
+con <- dbConnect(RSQLite::SQLite(), ":memory:")
 
-#* Process the HTML Form Upload
-#* @post /upload
-#* @serializer html
+# Ensure table exists (adjust schema to your CSV structure)
+#dbExecute(con, "
+#CREATE TABLE IF NOT EXISTS my_table (
+    #id INTEGER PRIMARY KEY AUTOINCREMENT,
+    #col1 TEXT,
+    #col2 TEXT,
+    #col3 TEXT
+#)")
 
-
-################################################################
-function(req, res) {
-  # Parse the incoming multipart form data
-  multipart <- mime::parse_multipart(req)
-  
-  # Validation: Check if a file was actually uploaded
-  if (is.null(multipart$file)) {
-    res$status <- 400
-    return("<h3>Error: No file selected.</h3><a href=‘/‘>Go Back</a>")
-  }
-  
-  # Extract temporary file path and actual file name
-  tmp_file_path <- multipart$file$datapath
-  original_name <- multipart$file$name
-
-    con <- dbConnect(
-      drv, # re-assign? 
-      dbname   = extract_db_name(query), #sakila
-      host     = "localhost",
-      port     = 3306,
-      user     = "root",
-      password = "189999"
-    )
-
-    con <- dbConnect(
-      drv, # re-assign? 
-      dbname   = extract_db_name(query), #sakila
-      host     = "localhost",
-      port     = 3306,
-      user     = "root",
-      password = "189999"
-    )
-
-
-
-
-
-  # Read data and write to database safely
+#* Upload CSV and save to DB
+#* @param csv_file The CSV file to upload
+#* @post /upload_csv
+function(file) {
   tryCatch({
-    # Read the temporary CSV file
-    uploaded_data <- readr::read_csv(tmp_file_path)
-    
-    # Append data frame into the database table
+    # Save uploaded file temporarily
+    tmp_path <- tempfile(fileext = ".csv")
+    file.copy(file$datapath, tmp_path, overwrite = TRUE)
+    print(file)
+    print(file.copy(file$datapath, tmp_path, overwrite = TRUE))
 
-    dbWriteTable(
-      conn = con, 
-      name = "uploaded_records", #########################
-      value = uploaded_data, 
-      append = TRUE, 
-      row.names = FALSE
+    # Read CSV into R
+    df <- read_csv(tmp_path, show_col_types = FALSE)
+
+    # Validate columns (adjust as needed)
+    #required_cols <- c("col1", "col2", "col3")
+    #if (!all(required_cols %in% names(df))) {
+      #stop("CSV missing required columns: ", paste(setdiff(required_cols, names(df)), collapse = ", "))
+    #}
+
+    # Insert into DB
+    dbWriteTable(con, "my_table", df, append = TRUE, row.names = FALSE)
+
+    # Optional: Call PHP script after saving
+    php_url <- "https://example.com/action.php"
+    res <- httr::POST(php_url, body = list(status = "success"), encode = "form")
+
+    list(
+      status = "success",
+      rows_inserted = nrow(df),
+      php_response = httr::content(res, as = "text")
     )
-    
-    # Return a success message in HTML format
-    return(paste0(
-      "<h3>Success!</h3>",
-      "<p>Successfully inserted <strong>", nrow(uploaded_data), "</strong> rows ",
-      "from <em>", original_name, "</em> into the database.</p>",
-      "<a href=‘/‘>Upload another file</a>"
-    ))
-
   }, error = function(e) {
-    # Fail-safe error
-res$status <- 500 
-return(paste0("<h3>Database Error</h3><p>", e$message, "</p><a href='/>Go Back</a>")) }) }
-
-# write_delim(data,'titanic.csv',delim=',')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    list(status = "error", message = e$message)
+  })
+}
