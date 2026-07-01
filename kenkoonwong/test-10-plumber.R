@@ -30,11 +30,6 @@ html_content <- '
     <title>Download MySQL Query Result</title>
 </head>
 <body>
-    <h2>Run SQL Query and Download CSV</h2>
-    <input type="text" id="sqlQuery" placeholder="Enter SQL query" style="width:400px;">
-    <button id="downloadBtn">Download CSV</button> 
-    <button id= "viewTable" onclick="executeQuery"> View Table </button> <!-- not id="sqlQuery" -->
-
     <style>
       body { font-family: Arial, sans-serif; margin: 40px; background: #f4f4f9; }
       .container { max-width: 500px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
@@ -44,23 +39,16 @@ html_content <- '
       button:hover { background: #0056b3; }
     </style>
 
+
+    <h2>Run SQL Query and Download CSV</h2>
+    <input type="text" id="sqlQuery" placeholder="Enter SQL query" style="width:400px;">
+    <button id="downloadBtn">Download CSV</button> 
+    <button id= "viewTable" onclick="executeQuery"> View Table </button> <!-- not id="sqlQuery" -->
+
 <!-- No button 1132 6/30:     <input type="text" id="uploaded_file_path" placeholder="Enter path to file" style="width:400px;">  --> 
 
 <input type="file" id="fileUpload" >
 <button id="fileUploadBtn" type=‘submit’>Upload and Save</button> <!-- Not nece. a button -->
-
-<script>document.getElementById("fileUploadBtn").addEventListener("click", function() {
-  if (fileInput.files.length > 0) {
-    const file = fileInput.files[0];
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const fileContent = e.target.result;
-      console.log("File Content:", fileContent);
-    };
-    reader.readAsText(file);
-  }
- });</script>
-
 
     <div class=‘container’>
       <h2>Upload CSV to Database</h2>
@@ -90,24 +78,8 @@ html_content <- '
         });
     </script>
 
-    <script>
-    // import {DataTable} from "simple-datatables";
-    document.getElementById("viewTable").addEventListener("click", function() {
-    const tableQuery = document.getElementById("sqlQuery").value.trim();
-    const encodedTableQuery = encodeURIComponent(tableQuery);
-    // ? download to downloadtablequery?
-    window.location.href = `http://localhost:8000/downloadtablequery?tableQuery=${encodedTableQuery}`;
-    });
-    </script>
-
-
-    <input type="text" id="csv_data" placeholder="Enter Comma Separated Values" style="width:600px;">
-
-
-
-
-
-
+    <input type="text" id="csv_data" placeholder="Enter Comma Separated Values" style="width: 600px; height: 80px;">
+    <button id="csv_delim_textdata_downloadBtn">Download CSV</button> 
 
 </body>
 </html>
@@ -318,6 +290,26 @@ extract_after_first_semicolon <- function(tableQuery) {
     #col3 TEXT
 #)")
 
+
+
+#* Read comma delimited text as data to R plumber
+#* @param csv_data The comma-separated values as a string
+#* @post /parse-csv
+
+function(csv_text) {
+  con = textConnection(csv_text)
+  data=read.csv(con,stringsAsFactors=FALSE)
+  #close(con)
+  return(data)
+}
+
+
+
+
+
+
+
+############################# Could be deleted:
 #* Upload CSV and save to DB
 #* @param file The CSV file to upload
 #* @post file

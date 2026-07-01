@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset=“UTF-8”>
+    <title>CSV to MySQL Upload</title>
+</head>
+<body>
+    <h2>Upload CSV File to Database</h2>
+    <form id="uploadForm">
+        <input type="file" id="csvFile" accept=".csv" required />
+        <button type=“submit”>Upload and Save</button>
+    </form>
+    <div id="status"></div>
+
+    <script>
+        document.getElementById("uploadForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            
+            const fileInput = document.getElementById("csvFile");
+            const statusDiv = document.getElementById("status");
+            
+            if (!fileInput.files[0]) {
+                statusDiv.innerText = "Please select a file first.";
+                return;
+            }
+
+            // Pack file into FormData object
+            const formData = new FormData();
+            formData.append("csvFile", fileInput.files[0]);
+
+            statusDiv.innerText = "Uploading and processing...";
+
+            try {
+                // Send the file to your backend server endpoint
+                const response = await fetch("http://localhost:8000/upload", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    statusDiv.innerHTML = `<span style="color:green;">Success: ${result.message}</span>`;
+                } else {
+                    statusDiv.innerHTML = `<span style="color:red;">Error: ${result.error}</span>`;
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<span style="color:red;">Server error occurred.</span>`;
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+</html>
