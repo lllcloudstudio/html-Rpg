@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang=“en”>
+<head>
+  <meta charset=“UTF-8”>
+  <meta name=“viewport” content=“width=device-width, initial-scale=1.0”>
+  <style>
+
+  </style>
+</head>
+<body>
+
+<form method="GET" action="http://localhost/plumber.R/"> 
+<input type="color" name="color">
+<input type="range" name="range" min="1" max="10">
+<input type="time" name="time"><br>
+<input type="url" name="url" size="54" required >
+<!-- <input type="file" id="csvFile" accept=".csv">  -->
+<!-- <input type="text" id="textInput" placeholder="Text value will appear here"> -->
+<!-- not input <textarea id=“csv-data” name=“csv_string” rows=“10” cols=“50” placeholder=“Id,Name,Value&#10;1,TestA,10.5&#10;2,TestB,20.0”></textarea> -->
+<p><input type="submit" value="Submit Form"></p>
+</form>
+
+
+
+
+<form action=“http://localhost:8000/read_csv” method=“POST” enctype=“text/plain”>
+  <label for=“csv-data”>Paste your CSV data here:</label><br>
+  <textarea id=“csv-data” name=“csv_string” rows=“10” cols=“50” placeholder=“Id,Name,Value&#10;1,TestA,10.5&#10;2,TestB,20.0”></textarea>
+  <br>
+  <button id="BtnCSVtoR" type=“submit”>Send CSV to R</button>
+</form>
+
+<label for="services">Choose a service:</label>
+<select id="services" name="services">
+  <option value="" disabled selected> Select a choice ...</option>
+  <option value="web-dev">Web Development</option>
+  <option value="design">UI/UX Design</option>
+  <option value="marketing">Digital Marketing</option>
+</select>
+
+</body>
+</html>

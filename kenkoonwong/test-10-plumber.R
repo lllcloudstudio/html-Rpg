@@ -60,12 +60,6 @@ html_content <- '
       </form>
     </div>
 
-<!-- path/to/file/upload not sqlQuery-->
-    <script>
-        document.getElementById("uploadBtn").addEventListener("click", function() {
-            const file_0_contents = document.getElementById("sqlQuery").value.trim(); <!-- -->
-        });
-    </script>
 
     <script>
         document.getElementById("downloadBtn").addEventListener("click", function() {
@@ -291,59 +285,3 @@ extract_after_first_semicolon <- function(tableQuery) {
 #)")
 
 
-
-#* Read comma delimited text as data to R plumber
-#* @param csv_data The comma-separated values as a string
-#* @post /parse-csv
-
-function(csv_text) {
-  con = textConnection(csv_text)
-  data=read.csv(con,stringsAsFactors=FALSE)
-  #close(con)
-  return(data)
-}
-
-
-
-
-
-
-
-############################# Could be deleted:
-#* Upload CSV and save to DB
-#* @param file The CSV file to upload
-#* @post file
-#* @serializer contentType list(type="text/html")
-function(file) {
-  tryCatch({
-    # Save uploaded file temporarily
-    tmp_path <- tempfile(fileext = ".csv")
-    file.copy(file$datapath, tmp_path, overwrite = TRUE)
-    print(file)
-    print(file.copy(file$datapath, tmp_path, overwrite = TRUE))
-
-    # Read CSV into R
-    df <- read_csv(tmp_path, show_col_types = FALSE)
-
-    # Validate columns (adjust as needed)
-    #required_cols <- c("col1", "col2", "col3")
-    #if (!all(required_cols %in% names(df))) {
-      #stop("CSV missing required columns: ", paste(setdiff(required_cols, names(df)), collapse = ", "))
-    #}
-
-    # Insert into DB
-    dbWriteTable(con, "my_table", df, append = TRUE, row.names = FALSE)
-
-    # Optional: Call PHP script after saving
-    php_url <- "https://example.com/action.php"
-    res <- httr::POST(php_url, body = list(status = "success"), encode = "form")
-
-    list(
-      status = "success",
-      rows_inserted = nrow(df),
-      php_response = httr::content(res, as = "text")
-    )
-  }, error = function(e) {
-    list(status = "error", message = e$message)
-  })
-}

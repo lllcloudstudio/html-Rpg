@@ -31,9 +31,6 @@ html_content <- '
 
     <button id= "viewTable" onclick="executeQuery"> View Table </button> <!-- not id="sqlQuery" -->
 
-
-
-
     <script>
         document.getElementById("downloadBtn").addEventListener("click", function() {
             // 
@@ -55,24 +52,13 @@ html_content <- '
     window.location.href = `http://localhost:8000/downloadtablequery?tableQuery=${encodedTableQuery}`;
     });
     </script>
-
-
-
-
-
-
-	
-
-
-
-
-
-
 </body>
 </html>
 '
   return(html_content)
 }
+
+
 
 #* @get /download
 #* @param query The SQL query to run
