@@ -125,21 +125,3 @@ res$status <- 500
 return(paste0("<h3>Database Error</h3><p>", e$message, "</p><a href='/>Go Back</a>")) }) }
 
 # write_delim(data,'titanic.csv',delim=',')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -71,22 +71,35 @@ function(table_id = "", csv_data = "", res) {
   
   # 3. Parse the comma-delimited text into an R Data Frame
   tryCatch({
-    parsed_data <- readr::read_csv(csv_data, show_col_types = FALSE)
+    parsed_data <- read_csv(I(csv_data)) # readr:: , show_col_types = FALSE
+    #parsed_data <- read_delim(I(csv_data), delim = ",")
   }, error = function(e) {
     res$status <- 400
     return(list(status = "error", message = paste("Failed to parse CSV text:", e$message)))
   })
+
+  print(parsed_data)
+
+
+  #########################
+con <- dbConnect(RSQLite::SQLite(), ":memory:")
+
+dbWriteTable(con, clean_table_name, parsed_data)
+dbReadTable(con, clean_table_name)
+
+  #########################
+
   
   # 4. Connect to MySQL database
   con <- dbConnect(
-    RMariaDB::MariaDB(),
+    MySQL(),
     host     = "127.0.0.1",
     port     = 3306,
     username = "root",
     password = "189999",
     dbname   = "REFERENCE"
   )
-  on.exit(dbDisconnect(con))
+  #on.exit(dbDisconnect(con))
   
   # 5. Dynamically write data as a table to MySQL
   tryCatch({
