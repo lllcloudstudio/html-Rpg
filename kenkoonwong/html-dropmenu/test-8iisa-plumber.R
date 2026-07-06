@@ -51,7 +51,7 @@ function sendData() {
 
 <!-- This is the element we will update without reloading -->
 <div id="resultDiv">Waiting for data...</div>
-
+<iframe src="/Users/benja/OneDrive/Documents/dygraphLib_chart.html" width="100%" height="400 px" style="border:none;"> </iframe>
 
 
 </body>
