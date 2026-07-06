@@ -9,6 +9,9 @@ library(knitr)
 library(utils)
 library(odbc)
 library(mime)
+library(htmlwidgets)
+library(dygraphs)
+library(widgetframe)
 
 #* @apiTitle 
 #* @apiDescription
@@ -69,3 +72,25 @@ function(data) {
 
 
 }
+
+
+
+#* @title Interactive Widget
+#* @serializer htmlwidget
+#* @param inputData
+
+function(req,res){
+tryCatch({ 
+  ts_widget <- dygraph(req,main="New Haven Temperatures")
+  saveWidget(frameableWidgets(ts_widget),file="/Users/benja/OneDrive/Documents/dygraphLib_chart.html",selfcontained=TRUE)
+
+
+},
+  error = function(e){
+    res$status <- 500
+    return(e$message)
+  })}
+
+
+
+
