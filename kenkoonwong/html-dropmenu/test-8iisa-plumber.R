@@ -1,14 +1,14 @@
 library(plumber)
-library(DBI)
-library(RMariaDB)
-library(DBI)
-library(RMySQL)
-library(tidyverse)
-library(kableExtra)
-library(knitr)
-library(utils)
-library(odbc)
-library(mime)
+#library(DBI)
+#library(RMariaDB)
+#library(DBI)
+#library(RMySQL)
+#library(tidyverse)
+#library(kableExtra)
+#library(knitr)
+#library(utils)
+#library(odbc)
+#library(mime)
 library(htmlwidgets)
 library(dygraphs)
 library(widgetframe)
@@ -79,11 +79,12 @@ function(data) {
 #* @serializer htmlwidget
 #* @param inputData
 
-function(req,res){
+function(inputData,res){
 tryCatch({ 
-  ts_widget <- dygraph(req,main="New Haven Temperatures")
+  print(inputData)
+  ts_widget <- dygraph(inputData,main="New Haven Temperatures")
   saveWidget(frameableWidgets(ts_widget),file="/Users/benja/OneDrive/Documents/dygraphLib_chart.html",selfcontained=TRUE)
-
+  return(inputData)
 
 },
   error = function(e){
