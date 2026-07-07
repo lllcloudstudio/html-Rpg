@@ -9,6 +9,7 @@ library(plumber)
 #library(utils)
 #library(odbc)
 #library(mime)
+
 library(htmlwidgets)
 library(dygraphs)
 library(widgetframe)
@@ -51,7 +52,7 @@ function sendData() {
 
 <!-- This is the element we will update without reloading -->
 <div id="resultDiv">Waiting for data...</div>
-<iframe src="/Users/benja/OneDrive/Documents/dygraphLib_chart.html" width="100%" height="400 px" style="border:none;"> </iframe>
+<!-- <iframe src="http://localhost:8000/plot" width="600" height="400" style="border:none;"> </iframe> -->
 
 
 </body>
@@ -76,15 +77,19 @@ function(data) {
 
 
 #* @title Interactive Widget
-#* @serializer htmlwidget
+#* @serializer png
 #* @param inputData
+#* @get /plot
 
 function(inputData,res){
 tryCatch({ 
+  
+  plot(inputData)
   print(inputData)
-  ts_widget <- dygraph(inputData,main="New Haven Temperatures")
-  saveWidget(frameableWidgets(ts_widget),file="/Users/benja/OneDrive/Documents/dygraphLib_chart.html",selfcontained=TRUE)
+  #ts_widget <- dygraph(inputData,main="New Haven Temperatures")
+  #saveWidget(frameableWidgets(ts_widget),file="/Users/benja/OneDrive/dygraphLib_chart.html",selfcontained=TRUE)
   return(inputData)
+  #return(ts_widget)
 
 },
   error = function(e){
