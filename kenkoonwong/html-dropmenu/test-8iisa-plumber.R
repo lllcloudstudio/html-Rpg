@@ -1,14 +1,18 @@
 library(plumber)
-library(DBI)
-library(RMariaDB)
-library(DBI)
-library(RMySQL)
-library(tidyverse)
-library(kableExtra)
-library(knitr)
-library(utils)
-library(odbc)
-library(mime)
+#library(DBI)
+#library(RMariaDB)
+#library(DBI)
+#library(RMySQL)
+#library(tidyverse)
+#library(kableExtra)
+#library(knitr)
+#library(utils)
+#library(odbc)
+#library(mime)
+
+library(htmlwidgets)
+library(dygraphs)
+library(widgetframe)
 
 #* @apiTitle 
 #* @apiDescription
@@ -48,7 +52,7 @@ function sendData() {
 
 <!-- This is the element we will update without reloading -->
 <div id="resultDiv">Waiting for data...</div>
-
+<!-- <iframe src="http://localhost:8000/plot" width="600" height="400" style="border:none;"> </iframe> -->
 
 
 </body>
@@ -69,3 +73,30 @@ function(data) {
 
 
 }
+
+
+
+#* @title Interactive Widget
+#* @serializer png
+#* @param inputData
+#* @get /plot
+
+function(inputData,res){
+tryCatch({ 
+  
+  plot(inputData)
+  print(inputData)
+  #ts_widget <- dygraph(inputData,main="New Haven Temperatures")
+  #saveWidget(frameableWidgets(ts_widget),file="/Users/benja/OneDrive/dygraphLib_chart.html",selfcontained=TRUE)
+  return(inputData)
+  #return(ts_widget)
+
+},
+  error = function(e){
+    res$status <- 500
+    return(e$message)
+  })}
+
+
+
+
