@@ -25,7 +25,7 @@ html_content <- '
 <head>
 <meta charset="UTF-8">
 <title>OnClick Submit Show Dropdown</title>
-<style>
+<!-- <style>
     /* Basic styling for dropdown */
     #dropdownMenu {
         display: none; /* Hidden by default */
@@ -45,7 +45,7 @@ html_content <- '
     #dropdownMenu a:hover {
         background-color: #f1f1f1;
     }
-</style>
+</style> -->
 </head>
 <body>
 

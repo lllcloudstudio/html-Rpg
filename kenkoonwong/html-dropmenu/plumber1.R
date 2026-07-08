@@ -49,7 +49,7 @@ html_content <- '
 
 
 
-
+<form method="GET" action="http://localhost:8000/echo.py">
 <label for="services">Choose a service:</label>
 <select id="services" name="services">
   <option value="" disabled selected> Select a choice ...</option>
@@ -57,6 +57,7 @@ html_content <- '
   <option value="design">UI/UX Design</option>
   <option value="marketing">Digital Marketing</option>
 </select>
+</form>
 
 <script>
     // csv-form is unique as Id ?

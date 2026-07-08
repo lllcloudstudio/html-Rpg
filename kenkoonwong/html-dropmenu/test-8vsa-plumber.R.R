@@ -21,7 +21,15 @@ function(){
 
 <h3>Enter comma‑separated numeric values</h3>
 <textarea id="csv" rows="4" cols="50">1, 2, 5, 8, 3</textarea><br><br>
-
+<label for="">Distribution Shape:</label>
+<select id="" name="">
+  <option value="" disabled selected> Select a choice ...</option>
+  <option value="histogram">Histogram</option>
+  <option value="density plot">Density Plot</option>
+  <option value="boxplot">Boxplot</option>
+  <option value="stripchart">Stripchart</option>
+</select>
+<br><br>
 <button onclick="sendData()">Generate Plot</button>
 
 <h3>Plot Output</h3>
