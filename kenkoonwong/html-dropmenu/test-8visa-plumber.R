@@ -24,7 +24,7 @@ function(){
 
 <button onclick="sendData()">Generate Plot</button>
 
-<h2>Plot Output</h2>
+<h3>Plot Output</h3>
 <img id="plot" style="border:1px solid #444; max-width:500px;">
 
 <script>
