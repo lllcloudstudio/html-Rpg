@@ -34,7 +34,15 @@ function(){
 
         });
 </script>
-
+<script>
+// to get the selected value from the dropdown and print it to html by <p> 
+function getSelectedValue() {
+  var dropdown = document.getElementById("myDropDown"); // or const
+  var selectedValue = dropdown.value; // or const
+  document.getElementById("resultDisplay").innerHTML = "Selected value to print to html: " + selectedValue;
+  console.log("Selected Value:", selectedValue);
+}
+</script>
 </body>
 </html>'
 return(html_content)
