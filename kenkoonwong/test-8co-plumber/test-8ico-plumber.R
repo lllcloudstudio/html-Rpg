@@ -57,27 +57,17 @@ html_content <- '
         <input type="submit" value="Create / Update Table in MySQL">
     </form>
 
-    
 <h2>Enter comma‑separated numeric values</h2>
-<textarea id="csv" rows="4" cols="50">1, 2, 5, 8, 3</textarea><br>
 
+<form action="http://127.0.0.1:8000/Rplot" method="get">
+<textarea id="csv" rows="4" cols="50">1, 2, 5, 8, 3</textarea><br>
 <select id="myDropDown">
 <option value="histogram">Histogram</option>
 <option value="density plot">Density Plot</option>
 <option value="boxplot">Box Plot</option>
 <option value="strip chart">Strip Chart</option>
 </select>
-
-<script>
-    // Encode query for URL
-    const encodedQuery = encodeURIComponent(selectedValue);
-    // Trigger file download
-    window.location.href = `http://localhost:8000/downloaddropDown?selectedValue=${encodedQuery}`;
-        });
-
-
-        });
-</script>
+</form>
 
 <br>
 
@@ -85,22 +75,24 @@ html_content <- '
 <h3>Plot Output</h3>
 <img id="plot" style="border:1px solid #444; max-width:500px;">
 <p id="resultDisplay"> Waiting for result...</p>
+
 <script>
 async function sendData() {
-  const csv = document.getElementById("csv").value;
-  var dropdown = document.getElementById("myDropDown").value; // or const no .value
+  const csv = document.getElementById("csv").value;  
+  const dropdown = document.getElementById("myDropDown").value;
+
+  //const selectedValue = dropdown.value;
   
-  //document.getElementById("resultDisplay").innerHTML = "Selected value to print to html: " + dropdown.value; // or selectedValue
-  //console.log("Selected Value:", selectedValue);
+  const formData = new FormData();
+  formData.append("plotType", dropdown); // text
+  formData.append("textarea_csv",new Blob([csv],{type: "text/csv"}),"textarea_data.csv");// text
 
   try {
-    const response = await fetch("http://localhost:8000/plot", {
+    const response = await fetch("http://localhost:8000/Rplot", {
       method: "POST",
-      headers: {
-        "Content-Type": "text/plain"
-      },
-      body: csv // 1 per line dropdown
+      body: formData // 1 per line dropdown
     });
+    
 
     if (!response.ok) {
       alert("Error: " + await response.text());
@@ -109,17 +101,18 @@ async function sendData() {
 
     const blob = await response.blob();
     const url = URL.createObjectURL(blob);
-    const selectedValue = dropdown.value; // or const
+
+
+
+
     document.getElementById("plot").src = url;
-    //document.getElementById("resultDisplay").innerHTML = "Selected value to print to html: " + selectedValue; // Selected value to print to html: undefined
- 
+
 
   } catch (err) {
     alert("Network error: " + err);
   }
 }
 </script>
-
 
 
 
@@ -410,10 +403,9 @@ dbReadTable(con, clean_table_name)
 
 ####################################################### test-8visa-plumber.R
 
-
+#### @param selectedValue:string The selected plot type from the dropdown
 #* Create a plot from CSV numeric values
-#* @post /plot
-#* @param selectedValue:string The selected plot type from the dropdown
+#* @post /Rplot
 #* @serializer png
 function(req) {
   # Extract the raw POST body
