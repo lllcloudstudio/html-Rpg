@@ -59,7 +59,7 @@ html_content <- '
 
 <h2>Enter comma‑separated numeric values</h2>
 
-<form action="http://127.0.0.1:8000/Rplot" method="get">
+<form action="http://127.0.0.1:8000/Rplot" method="post">
 <textarea id="csv" rows="4" cols="50">1, 2, 5, 8, 3</textarea><br>
 <select id="myDropDown">
 <option value="histogram">Histogram</option>
@@ -116,7 +116,7 @@ async function sendData() {
 
 
 
-   <!-- <script>
+    <script>
     // import {DataTable} from "simple-datatables";
     document.getElementById("viewTable").addEventListener("click", function() {
     const tableQuery = document.getElementById("sqlQuery").value.trim();
@@ -124,7 +124,7 @@ async function sendData() {
     // ? download to downloadtablequery?
     window.location.href = `http://localhost:8000/downloadtablequery?tableQuery=${encodedTableQuery}`;
     });
-    </script>-->
+    </script>
 </body>
 </html>
 '
@@ -284,7 +284,7 @@ extract_after_first_semicolon <- function(tableQuery) {
 }
 library(RMariaDB)
   # Connect to MySQL
-  drv=MariaDB() #drv=MySQL()
+  drv=MySQL() #drv=MariaDB() #
 
   tryCatch({
     con <- dbConnect(
@@ -411,8 +411,8 @@ function(req) {
   # Extract the raw POST body
   body <- req$postBody
   args <- req$args
-  print(args) # [[1]] [1] "1, 2, 5, 8, 3" [1] "1, 2, 5, 8, 3"
-  print(body) # [1] "1, 2, 5, 8, 3"
+  #print(args) # [[1]] [1] "1, 2, 5, 8, 3" [1] "1, 2, 5, 8, 3"
+  #print(body) # [1] "1, 2, 5, 8, 3"
 
   
   # Basic validation
