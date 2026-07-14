@@ -5,6 +5,7 @@ library(tidyverse)
 library(kableExtra)
 library(knitr)
 library(utils)
+library(graphics)
 
 #* @apiTitle 
 #* @apiDescription
@@ -58,63 +59,39 @@ html_content <- '
     </form>
 
 <h2>Enter comma‑separated numeric values</h2>
-
-<form action="http://127.0.0.1:8000/Rplot" method="post">
-<textarea id="csv" rows="4" cols="50">1, 2, 5, 8, 3</textarea><br>
-<select id="myDropDown">
-<option value="histogram">Histogram</option>
-<option value="density plot">Density Plot</option>
-<option value="boxplot">Box Plot</option>
-<option value="strip chart">Strip Chart</option>
-</select>
+<!-- label for <input> <select> <textarea> -->
+<form id="upload-form">
+  <label for="user-text">Description:</label>
+  <input type="text" id="user-text" name="my_text" required>
+  
+  <label for="csv-file">Upload CSV:</label>
+  <input type="text" id="csv-file" name="csv_file" required>
+  
+  <button type="submit">Submit</button>
 </form>
 
-<br>
 
-<button onclick="sendData()">Generate Plot</button>
-<h3>Plot Output</h3>
-<img id="plot" style="border:1px solid #444; max-width:500px;">
-<p id="resultDisplay"> Waiting for result...</p>
 
 <script>
-async function sendData() {
-  const csv = document.getElementById("csv").value;  
-  const dropdown = document.getElementById("myDropDown").value;
-
-  //const selectedValue = dropdown.value;
+document.getElementById("upload-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
   
-  const formData = new FormData();
-  formData.append("plotType", dropdown); // text
-  formData.append("textarea_csv",new Blob([csv],{type: "text/csv"}),"textarea_data.csv");// text
+  const form = e.target;
+  const formData = new FormData(form);
 
   try {
-    const response = await fetch("http://localhost:8000/Rplot", {
+    const response = await fetch("http://localhost:8000/upload", {
       method: "POST",
-      body: formData // 1 per line dropdown
+      body: formData
     });
     
-
-    if (!response.ok) {
-      alert("Error: " + await response.text());
-      return;
-    }
-
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
-
-
-
-
-    document.getElementById("plot").src = url;
-
-
-  } catch (err) {
-    alert("Network error: " + err);
+    const result = await response.json();
+    console.log(result);
+  } catch (error) {
+    console.error("Error:", error);
   }
-}
+});
 </script>
-
-
 
     <script>
     // import {DataTable} from "simple-datatables";
@@ -399,68 +376,60 @@ dbReadTable(con, clean_table_name)
     return(list(status = "error", message = paste("MySQL Table generation failed:", e$message)))
   })
 }
-
-
-####################################################### test-8visa-plumber.R
-
-#### @param selectedValue:string The selected plot type from the dropdown
-#* Create a plot from CSV numeric values
+####################################### ok--
+### @parser form
+### not html serializer
 #* @post /Rplot
 #* @serializer png
-function(req) {
-  # Extract the raw POST body
-  body <- req$postBody
-  args <- req$args
-  #print(args) # [[1]] [1] "1, 2, 5, 8, 3" [1] "1, 2, 5, 8, 3"
-  #print(body) # [1] "1, 2, 5, 8, 3"
+function(req, res) {
+  # 1. Extract data sent from the HTML form
+  #print(req)
+  #print(res)
+  num_points <- req$body$csv ###################################!
+  plot_type <- req$body$myDropDown ###!
+  print(num_points)
+  print(plot_type)
+  #stripchart(as.numeric(num_points))
+  avector=unlist(strsplit(num_points,split=","))
+  vector=as.numeric(avector)
+  stripchart(vector)
 
-  
-  # Basic validation
-  if (is.null(body) || nchar(body) == 0) {
-    stop("Empty input. Provide comma-separated values.")
-  }
-  
-  # Split CSV and convert to numeric
-  values <- strsplit(body, ",")[[1]]
-  values <- trimws(values)
-  
-  # Validate numeric values
-  nums <- suppressWarnings(as.numeric(values))
-  if (any(is.na(nums))) {
-    stop("Invalid numeric values. Ensure all entries are numbers.")
-  }
-  
-  # Produce a simple plot
-  plot(
-    nums,
-    type = "o",
-    main = "Plot of Submitted Values",
-    xlab = "Index",
-    ylab = "Value"
-  )
 }
 
-function() {
-  pr_set_debug(TRUE)
-  print("hello world")
+#* @apiTitle Multipart Form Data Upload
+#* @apiVersion 1.0
+
+#* @post /upload
+#* @parser multi
+function(req, res) {
+  # Extract the text parameter
+
+  text_data <- req$body$my_text
+  file_info <- req$body$csv_file
+  
+  # Check if file was provided
+  if (is.null(file_info)) {
+    res$status <- 400
+    return(list(error = "No CSV file uploaded"))
+  }
+  
+  # Read the raw file content from its temporary path
+  df <- read.csv(file_info$datapath)
+  print(df)
+  num_points <- req$body$csv_file ###################################!
+  plot_type <- req$body$my_text ###!
+  print(num_points)
+  print(plot_type)
+  
+  #stripchart(as.numeric(num_points))
+  avector=unlist(strsplit(num_points,split=","))
+  vector=as.numeric(avector)
+  stripchart(vector)
+  
+  # Do processing here...
+  
+  return(list(
+    message = "Successfully received text and CSV",
+    received_text = text_data
+  ))
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Plumber Plot Viewer</title>
+</head>
+<body>
+    <h2>View R Plots</h2>
+
+    <!-- The Form -->
+    <form id="plotForm">
+        <label for="species">Choose Species:</label>
+        <select name="species_name" id="species">
+            <option value="setosa">Setosa</option>
+            <option value="versicolor">Versicolor</option>
+            <option value="virginica">Virginica</option>
+        </select>
+        <button type="submit">Generate Plot</button>
+    </form>
+
+    <!-- Plot will render here -->
+    <div id="plotContainer" style="margin-top: 20px;">
+        <img id="resultImage" src="" alt="Plot will appear here" style="display: none; max-width: 600px;">
+    </div>
+
+    <script>
+        document.getElementById('plotForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Stop page from reloading
+
+            const formData = new FormData(this);
+            const data = new URLSearchParams(formData);
+
+            // Fetch data from R Plumber
+            fetch('http://localhost:8000/get-plot', {
+                method: 'POST',
+                body: data
+            })
+            .then(response => response.json())
+            .then(result => {
+                const imgElement = document.getElementById('resultImage');
+                // Set the image source as base64
+                imgElement.src = 'data:image/png;base64,' + result.plot_data;
+                imgElement.style.display = 'block'; // Show the image
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>

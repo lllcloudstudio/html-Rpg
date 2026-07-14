@@ -113,8 +113,9 @@ return(html_content)
 #* @serializer png
 function(req) {
   # Extract the raw POST body
+  print(req)
   body <- req$postBody
-  
+  print(body)
   # Basic validation
   if (is.null(body) || nchar(body) == 0) {
     stop("Empty input. Provide comma-separated values.")
