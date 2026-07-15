@@ -399,7 +399,7 @@ function(req, res) {
 #* @apiTitle Multipart Form Data Upload
 #* @apiVersion 1.0
 
-#* @post /upload
+#* @post /Rplot
 #* @parser multi
 function(req, res) {
   # Extract the text parameter
