@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Download MySQL Query Result</title>
+</head>
+<body>
+    <h2>Run SQL Query and Download CSV</h2>
+
+
+    <input type="text" id="sqlQuery" placeholder="Enter SQL query" style="width:400px;">
+    <button id="downloadBtn">Download CSV</button> 
+
+    <button id= "viewTable" onclick="executeQuery"> View Table </button> <!-- not id="sqlQuery" -->
+
+    <script>
+        document.getElementById("downloadBtn").addEventListener("click", function() {
+            // 
+            const query = document.getElementById("sqlQuery").value.trim();
+            // Encode query for URL
+            const encodedQuery = encodeURIComponent(query);
+            // Trigger file download
+            window.location.href = `http://localhost:8000/download?query=${encodedQuery}`;
+        });
+    </script>
+
+    <h2>Upload Comma-Delimited Data as a Table</h2>
+    
+    <form action="http://127.0.0.1:8000/upload" method="get">
+        <!-- Input for the MySQL Table Name -->
+        <label for="table_id">Desired MySQL Table Name:</label><br>
+        <input type="text" id="table_id" name="table_id" required placeholder="e.g., customer_logs"><br><br>
+        
+        <!-- Input for the CSV text -->
+        <label for="csv_data">Paste Comma-Delimited Data (Include Headers):</label><br>
+        <textarea id="csv_data" name="csv_data" rows="10" cols="50" required placeholder="name,age,city&#10;Alice,30,New York&#10;Bob,25,London"></textarea>
+        <br><br>
+        
+        <input type="submit" value="Create / Update Table in MySQL">
+    </form>
+
+<h2>Enter comma‑separated numeric values</h2>
+<!-- label for <input> <select> <textarea> -->
+<form id="upload-form" action="http://127.0.0.1:8000/Rplot" method="get">
+  <label for="user-text">Description:</label>
+  <input type="text" id="user-text" name="my_text" required>
+  
+  <label for="csv-file">Upload CSV:</label>
+  <input type="text" id="csv-file" name="csv_file" required>
+  
+  <button type="submit">Submit</button>
+</form>
+
+
+
+<script>
+document.getElementById("upload-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  
+  const form = e.target;
+  const formData = new FormData(form);
+
+  try {
+    const response = await fetch("http://localhost:8000/upload", {
+      method: "POST",
+      body: formData
+    });
+    
+    const result = await response.json();
+    console.log(result);
+  } catch (error) {
+    console.error("Error:", error);
+  }
+});
+</script>
+
+    <script>
+    // import {DataTable} from "simple-datatables";
+    document.getElementById("viewTable").addEventListener("click", function() {
+    const tableQuery = document.getElementById("sqlQuery").value.trim();
+    const encodedTableQuery = encodeURIComponent(tableQuery);
+    // ? download to downloadtablequery?
+    window.location.href = `http://localhost:8000/downloadtablequery?tableQuery=${encodedTableQuery}`;
+    });
+    </script>
+</body>
+</html>
