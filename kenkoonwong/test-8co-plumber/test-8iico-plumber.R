@@ -87,6 +87,30 @@ html_content <- '
         <br><br>
         <input type="submit" value="File Upload">
     </form>
+
+
+    <h2>Vector data Plot </h2>
+    <form action="http://127.0.0.1:8000/Rplot" method="get">
+        <!-- Input for the CSV text -->
+        <label for="csv_data3">Paste Vector Data (Do not Include Headers):</label><br>
+        <textarea id="csv_data3" name="csv_data3" rows="10" cols="50" required placeholder="23,45,67,89,01,34,16"></textarea>
+        <br><br>
+
+        <!-- select by dropdown menu -->
+        <label for="plot_type">Plot Option: </label>
+          <select id="plot" name="fruit">
+            <option value="hist">Histogram</option>
+            <option value="boxplot">Boxplot</option>
+            <option value="stripchart">Stripchart</option>
+          </select>
+        
+        <input type="submit" value="Create Rplot">
+    </form>
+
+
+
+
+
 </body>
 </html>
 '
@@ -303,6 +327,7 @@ function(table_id = "", csv_data = "", res) {
   print(table_id)
   print(csv_data)
 
+
   # 1. Validate inputs are not empty
   if (nchar(trimws(table_id)) == 0 || nchar(trimws(csv_data)) == 0) {
     res$status <- 400
@@ -371,19 +396,35 @@ dbReadTable(con, clean_table_name)
 }
 
 
+#* Accept form data and return png plot
+#* @parser multi
+#* @serializer png
+#* @post /Rplot
+function(req,res) {
+  # parse incoming form data
+  form_data = Rook::Multipart$parse(req)
+  plot_title=form_data$plot
+  num_points=as.numeric(form_data$csv_data3)
+  boxplot(num_points,main=plot_title,col="blue")
+}
 
 
 
 
+
+####################################################################
+####################################################################
+####################################################################
 
 #* Dynamic file upload a table in mySQL via GET Form Action
 #* @param table_id2:string The name of the MySQL table to create or update
 #* @param csv_data2:string The raw CSV text string
 #* @get /upload2
 #* @serializer json
-function(table_id2 = "", csv_data2 = "", res) {
-  print(table_id2)
-  print(csv_data2)
+function(table_id2 = "", csv_data2 = "", res) {# prints text
+
+  
+
 
   # 1. Validate inputs are not empty
   if (nchar(trimws(table_id2)) == 0 || nchar(trimws(csv_data2)) == 0) {
@@ -401,15 +442,15 @@ function(table_id2 = "", csv_data2 = "", res) {
   
   # 3. Parse the comma-delimited text into an R Data Frame
   tryCatch({
-    parsed_data <- read_csv(I(csv_data2)) # readr:: , show_col_types = FALSE
-    #parsed_data <- read_delim(I(csv_data), delim = ",")
+   #parsed_data <- read_csv(I(csv_data2)) # 0 rows
+    parsed_data <- read_csv(I(csv_data2),col_names=TRUE) #0 rows 
   }, error = function(e) {
     res$status <- 400
     return(list(status = "error", message = paste("Failed to parse CSV text:", e$message)))
   })
 
-  print(parsed_data)
-  parsed_data
+ #print(parsed_data)
+ #parsed_data
 
 
   #########################
