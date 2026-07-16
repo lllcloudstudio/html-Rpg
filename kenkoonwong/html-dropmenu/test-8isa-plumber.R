@@ -25,8 +25,8 @@ html_content <- '
     <title>Dynamic MySQL Table Creator</title>
 </head>
 <body>
-    <h2>Upload Comma-Delimited Data as a Table</h2>
-    
+
+    <h2>CSV to text area Upload to MySQL</h2>
     <form action="http://127.0.0.1:8000/upload" method="get">
         <!-- Input for the MySQL Table Name -->
         <label for="table_id">Desired MySQL Table Name:</label><br>
@@ -37,7 +37,24 @@ html_content <- '
         <textarea id="csv_data" name="csv_data" rows="10" cols="50" required placeholder="name,age,city&#10;Alice,30,New York&#10;Bob,25,London"></textarea>
         <br><br>
         
-        <input type="submit" value="Create / Update Table in MySQL">
+        <input type="submit" value="Create Table in MySQL">
+    </form>
+
+
+
+
+<!-- -->
+    <h2>File Upload (CSV) to MySQL</h2>
+    <form action="http://127.0.0.1:8000/upload2" method="get">
+        <!-- Input for the MySQL Table Name -->
+        <label for="table_id2">Desired MySQL Table Name:</label><br>
+        <input type="text" id="table_id2" name="table_id2" required placeholder="e.g., customer_logs"><br><br>
+        
+        <!-- Input for the CSV text -->
+        <label for="csv_data2">Paste Comma-Delimited Data (Include Headers):</label><br>
+        <input type="file" id="csv_data2" name="csv_data2">
+        <br><br>
+        <input type="submit" value="File Upload">
     </form>
 </body>
 </html>
@@ -121,4 +138,88 @@ dbReadTable(con, clean_table_name)
     return(list(status = "error", message = paste("MySQL Table generation failed:", e$message)))
   })
 }
+
+
+
+
+
+
+
+#* Dynamic file upload a table in mySQL via GET Form Action
+#* @param table_id2:string The name of the MySQL table to create or update
+#* @param csv_data2:string The raw CSV text string
+#* @get /upload2
+#* @serializer json
+function(table_id2 = "", csv_data2 = "", res) {
+  print(table_id2)
+  print(csv_data2)
+
+  # 1. Validate inputs are not empty
+  if (nchar(trimws(table_id2)) == 0 || nchar(trimws(csv_data2)) == 0) {
+    res$status <- 400
+    return(list(status = "error", message = "Both Table Name and CSV data fields are required."))
+  }
+  
+  # 2. Sanitize the table name to prevent SQL Injection
+  # Removes any characters that are not alphanumeric or underscores
+  clean_table_name <- gsub("[^a-zA-Z0-9_]", "", table_id2)
+  if (nchar(clean_table_name) == 0) {
+    res$status <- 400
+    return(list(status = "error", message = "Invalid table name. Use only letters, numbers, and underscores."))
+  }
+  
+  # 3. Parse the comma-delimited text into an R Data Frame
+  tryCatch({
+    parsed_data <- read_csv(I(csv_data2)) # readr:: , show_col_types = FALSE
+    #parsed_data <- read_delim(I(csv_data), delim = ",")
+  }, error = function(e) {
+    res$status <- 400
+    return(list(status = "error", message = paste("Failed to parse CSV text:", e$message)))
+  })
+
+  print(parsed_data)
+
+
+  #########################
+#con <- dbConnect(RSQLite::SQLite(), ":memory:")
+
+#dbWriteTable(con, clean_table_name, parsed_data)
+#dbReadTable(con, clean_table_name)
+
+  #########################
+
+  
+  # 4. Connect to MySQL database
+  con <- dbConnect(
+    MySQL(),
+    host     = "127.0.0.1",
+    port     = 3306,
+    username = "root",
+    password = "189999",
+    dbname   = "REFERENCE"
+  )
+  #on.exit(dbDisconnect(con))
+  
+  # 5. Dynamically write data as a table to MySQL
+  tryCatch({
+    dbWriteTable(
+      conn = con, 
+      name = clean_table_name,     # Dynamic table name from the form input
+      value = parsed_data, 
+      overwrite=TRUE, #      append = TRUE,   
+            # Use append=TRUE to add rows, or overwrite=TRUE to drop and recreate the table
+      row.names = FALSE
+    )
+    
+    return(list(
+      status = "success", 
+      message = paste0("Successfully written data to table '", clean_table_name, "'. Rows inserted: ", nrow(parsed_data))
+    ))
+    
+  }, error = function(e) {
+    res$status <- 500
+    return(list(status = "error", message = paste("MySQL Table generation failed:", e$message)))
+  })
+}
+
 
