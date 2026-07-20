@@ -1,12 +1,13 @@
-#* Generate a plot based on form data
+# plumber.R
+
+#* Generate a scatter plot
 #* @serializer png
-#* @post /generate_plot
-function(species = "setosa") {
-  data(iris)
-  filtered_data <- subset(iris, Species == species)
-  
-  # Initialize graphics device
-  par(bg = "white") 
-  plot(filtered_data$Sepal.Length, filtered_data$Sepal.Width,
-       main = paste("Iris:", species), xlab = "Sepal Length", ylab = "Sepal Width")
+#* @get /plot
+function() {
+mat <- cbind(Uni05 = (1:100)/21, Norm = rnorm(100),
+             `5T` = rt(100, df = 5), Gam2 = rgamma(100, shape = 2))
+boxplot(mat) # directly, calling boxplot.matrix()
 }
+
+
+
