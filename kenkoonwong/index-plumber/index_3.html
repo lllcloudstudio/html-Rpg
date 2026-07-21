@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Send CSV to R Plumber</title>
+</head>
+<body>
+  <h3>Enter comma-separated values:</h3>
+  <textarea id="csvInput" rows="6" cols="50"></textarea><br><br>
+  <button id="sendBtn">Send to R</button>
+
+  <h3>Plot Result:</h3>
+  <img id="plotImage" alt="Plot will appear here" style="max-width:500px;">
+
+  <script>
+    document.getElementById("sendBtn").addEventListener("click", async () => {
+      const csvText = document.getElementById("csvInput").value.trim();
+
+      if (!csvText) {
+        alert("Please enter some comma-separated values.");
+        return;
+      }
+
+      // Create FormData and append raw CSV text
+      const formData = new FormData();
+      formData.append("values", csvText); // FormData handles encoding
+
+      try {
+        const response = await fetch("http://localhost:8000/plot", {
+          method: "POST",
+          body: formData
+        });
+
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+        // Convert response to Blob and display as image
+        const blob = await response.blob();
+        document.getElementById("plotImage").src = URL.createObjectURL(blob);
+
+      } catch (err) {
+        console.error("Error sending data:", err);
+        alert("Failed to send data or receive plot.");
+      }
+    });
+  </script>
+</body>
+</html>

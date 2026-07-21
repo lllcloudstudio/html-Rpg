@@ -60,38 +60,20 @@ html_content <- '
 
 <h2>Enter comma‑separated numeric values</h2>
 <!-- label for <input> <select> <textarea> -->
-<form id="upload-form" action="http://127.0.0.1:8000/Rplot" method="get">
-  <label for="user-text">Description:</label>
-  <input type="text" id="user-text" name="my_text" required>
+<!-- <form id="upload-form" action="http://127.0.0.1:8000/Rplot" method="get"> -->
+<form method="post" action="http://127.0.0.1:8000/process">
+  <!-- <label for="user_text">Description:</label> -->
+  <!-- <input type="text" id="user_text" name="user_text" required> -->
   
-  <label for="csv-file">Upload CSV:</label>
-  <input type="text" id="csv-file" name="csv_file" required>
+  <label for="csv_file">Upload CSV:</label>
+  <input type="text" id="csv_file" name="csv_file">
   
   <button type="submit">Submit</button>
 </form>
 
 
 
-<script>
-document.getElementById("upload-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  
-  const form = e.target;
-  const formData = new FormData(form);
 
-  try {
-    const response = await fetch("http://localhost:8000/upload", {
-      method: "POST",
-      body: formData
-    });
-    
-    const result = await response.json();
-    console.log(result);
-  } catch (error) {
-    console.error("Error:", error);
-  }
-});
-</script>
 
     <script>
     // import {DataTable} from "simple-datatables";
@@ -379,16 +361,17 @@ dbReadTable(con, clean_table_name)
 ####################################### ok--
 ### @parser form
 ### not html serializer
-#* @post /Rplot
+#* @param 
+#* @param
+#* @post /process
 #* @serializer png
 function(req, res) {
   # 1. Extract data sent from the HTML form
-  #print(req)
+  print(req)
   #print(res)
-  num_points <- req$body$csv ###################################!
-  plot_type <- req$body$myDropDown ###!
+  num_points <- req$body$csv_file ###################################!
+  #plot_type <- req$body$user_text ###!
   print(num_points)
-  print(plot_type)
   #stripchart(as.numeric(num_points))
   avector=unlist(strsplit(num_points,split=","))
   vector=as.numeric(avector)

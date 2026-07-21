@@ -96,14 +96,7 @@ html_content <- '
         <textarea id="csv_data3" name="csv_data3" rows="10" cols="50" required placeholder="23,45,67,89,01,34,16"></textarea>
         <br><br>
 
-        <!-- select by dropdown menu -->
-        <label for="plot_type">Plot Option: </label>
-          <select id="plot" name="fruit">
-            <option value="hist">Histogram</option>
-            <option value="boxplot">Boxplot</option>
-            <option value="stripchart">Stripchart</option>
-          </select>
-        
+
         <input type="submit" value="Create Rplot">
     </form>
 
@@ -395,18 +388,55 @@ dbReadTable(con, clean_table_name)
   })
 }
 
-
-#* Accept form data and return png plot
-#* @parser multi
-#* @serializer png
+####################################################################
+####################################################################
+####################################################################
+#* Receive form data via POST
+#* @param csv_data3
 #* @post /Rplot
-function(req,res) {
+#* @serializer json
+function(csv_data3 = NULL,res) {
+  # Validate inputs
+  if (is.null(csv_data3)) {
+    res$status <- 400
+    return(list(error = "csv_data3 required."))
+  }
+
+
+
+  # Split CSV and convert to numeric
+  values <- strsplit(body, ",")[[1]]
+  values <- trimws(values)
+  
+  # Validate numeric values
+  nums <- suppressWarnings(as.numeric(values))
+  if (any(is.na(nums))) {
+    stop("Invalid numeric values. Ensure all entries are numbers.")
+  }
+  
+  # Produce a simple plot
+  plot(
+    nums,
+    type = "o",
+    main = "Plot of Submitted Values",
+    xlab = "Index",
+    ylab = "Value"
+  )
+
+
+
+
+####* Accept form data and return png plot
+####* @parser multi
+####* @serializer png
+####* @post /Rplot
+#function(req,res) {
   # parse incoming form data
-  form_data = Rook::Multipart$parse(req)
-  plot_title=form_data$plot
-  num_points=as.numeric(form_data$csv_data3)
-  boxplot(num_points,main=plot_title,col="blue")
-}
+  #form_data = Rook::Multipart$parse(req)
+  #plot_title=form_data$plot
+  #num_points=as.numeric(form_data$csv_data3)
+  #boxplot(num_points,main=plot_title,col="blue")
+#}
 
 
 

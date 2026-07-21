@@ -284,7 +284,7 @@ dbReadTable(con, clean_table_name)
 ####################################### ok--
 ### @parser form
 ### not html serializer
-#* @post /Rplot
+#* @get /Rplot
 #* @serializer png
 function(req, res) {
   # 1. Extract data sent from the HTML form
@@ -304,7 +304,7 @@ function(req, res) {
 #* @apiTitle Multipart Form Data Upload
 #* @apiVersion 1.0
 
-#* @post /Rplot
+#* @get /Rplot
 #* @parser multi
 function(req, res) {
   #pr_set_debug()
