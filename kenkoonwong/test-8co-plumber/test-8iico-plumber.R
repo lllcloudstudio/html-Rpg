@@ -88,18 +88,19 @@ html_content <- '
         <input type="submit" value="File Upload">
     </form>
 
-
     <h2>Vector data Plot </h2>
-    <form action="http://127.0.0.1:8000/Rplot" method="get">
+    <form action="http://127.0.0.1:8000/generate_plot" method="get">
+        <!-- Input for the MySQL Table Name -->
+        <label for="plot_type">Type of Plot</label><br>
+        <input type="text" id="plot_type" name="plot_type" required placeholder="e.g., boxplot, scatter, line plot"><br><br>
+        
         <!-- Input for the CSV text -->
-        <label for="csv_data3">Paste Vector Data (Do not Include Headers):</label><br>
-        <textarea id="csv_data3" name="csv_data3" rows="10" cols="50" required placeholder="23,45,67,89,01,34,16"></textarea>
+        <label for="csv_values">Paste Comma-Delimited Data (Include Headers):</label><br>
+        <textarea id="csv_values" name="csv_values" rows="10" cols="50" required placeholder="10,30,10,25"></textarea>
         <br><br>
-
-
-        <input type="submit" value="Create Rplot">
+        
+        <input type="submit" value="Create R Plot">
     </form>
-
 
 
 
@@ -391,37 +392,85 @@ dbReadTable(con, clean_table_name)
 ####################################################################
 ####################################################################
 ####################################################################
-#* Receive form data via POST
-#* @param csv_data3
-#* @post /Rplot
-#* @serializer json
-function(csv_data3 = NULL,res) {
-  # Validate inputs
-  if (is.null(csv_data3)) {
-    res$status <- 400
-    return(list(error = "csv_data3 required."))
+library(plumber)
+
+#* Generate a plot based on the dropdown type and comma-separated values
+#* @param plot_type Dropdown selection ("scatter", "line", or "histogram")
+#* @param csv_values Comma-separated numeric values (e.g., "10,15,20,25,30")
+#* @get /generate_plot
+#* @serializer png
+function(plot_type = "scatter", csv_values = "") {
+  
+  # 1. Parse the comma-separated string into a numeric vector
+  vals <- as.numeric(unlist(strsplit(csv_values, ",")))
+  
+  # 2. Handle missing or invalid inputs gracefully
+  if (length(vals) == 0 || any(is.na(vals))) {
+    plot.new()
+    text(0.5, 0.5, "Invalid or empty input provided.", col = "red")
+    return()
   }
+  
+  # 3. Create indices for X-axis (1 to N)
+  x_vals <- seq_along(vals)
+  
+  # 4. Generate the plot based on dropdown selection
+  if (plot_type == "scatter") {
+    plot(x_vals, vals, main = "Scatter Plot", xlab = "Index", ylab = "Value", 
+         pch = 19, col = "blue", type = "p", 
+         xlim = c(0.5, length(vals) + 0.5))
+         
+  } else if (plot_type == "line") {
+    plot(x_vals, vals, main = "Line Chart", xlab = "Index", ylab = "Value", 
+         col = "red", type = "l", lwd = 2,
+         xlim = c(0.5, length(vals) + 0.5))
+         
+  } else if (plot_type == "histogram") {
+    hist(vals, main = "Histogram", xlab = "Value", col = "lightblue", 
+         border = "black")
+         
+  } else {
+    plot.new()
+    text(0.5, 0.5, "Unknown plot type.", col = "red")
+  }
+}
+
+
+
+
+
+
+##* Receive form data via POST
+##* @param csv_data3
+##* @post /Rplot
+##* @serializer json
+#function(csv_data3 = NULL,res) {
+  # Validate inputs
+  #if (is.null(csv_data3)) {
+    #res$status <- 400
+    #return(list(error = "csv_data3 required."))
+  #}
 
 
 
   # Split CSV and convert to numeric
-  values <- strsplit(body, ",")[[1]]
-  values <- trimws(values)
+  #values <- strsplit(body, ",")[[1]] #########
+  #values <- trimws(values)
   
   # Validate numeric values
-  nums <- suppressWarnings(as.numeric(values))
-  if (any(is.na(nums))) {
-    stop("Invalid numeric values. Ensure all entries are numbers.")
-  }
+  #nums <- suppressWarnings(as.numeric(values))
+  #if (any(is.na(nums))) {
+    #stop("Invalid numeric values. Ensure all entries are numbers.")
+  #}
   
   # Produce a simple plot
-  plot(
-    nums,
-    type = "o",
-    main = "Plot of Submitted Values",
-    xlab = "Index",
-    ylab = "Value"
-  )
+  #plot(
+    #nums,
+    #type = "o",
+    #main = "Plot of Submitted Values",
+    #xlab = "Index",
+    #ylab = "Value"
+  #)
 
 
 
