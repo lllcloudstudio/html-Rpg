@@ -90,13 +90,23 @@ html_content <- '
 
     <h2>Vector data Plot </h2>
     <form action="http://127.0.0.1:8000/generate_plot" method="get">
-        <!-- Input for the MySQL Table Name -->
-        <label for="plot_type">Type of Plot</label><br>
-        <input type="text" id="plot_type" name="plot_type" required placeholder="e.g., boxplot, scatter, line plot"><br><br>
+ 
+<label for="plot_type2">Distribution Shape:</label>
+<select id="plot_type2" name="plot_type2">
+  <option value="" disabled selected> Select a choice ...</option>
+  <option value="hist">Histogram</option>
+  <option value="scatter">Scatter Plot</option>
+  <option value="line">Line Plot</option>
+
+</select>
+<br><br>
+     
+
+
 
         <!-- Input for the CSV text -->
-        <label for="csv_values">Paste Comma-Delimited Data (Include Headers):</label><br>
-        <textarea id="csv_values" name="csv_values" rows="10" cols="50" required placeholder="10,30,10,25"></textarea>
+        <label for="csv_values2">Paste Comma-Delimited Data (Include Headers):</label><br>
+        <textarea id="csv_values2" name="csv_values2" rows="10" cols="50" required placeholder="10,30,10,25"></textarea>
         <br><br>
         
         <input type="submit" value="Create R Plot">
@@ -395,14 +405,14 @@ dbReadTable(con, clean_table_name)
 library(plumber)
 
 #* Generate a plot based on the dropdown type and comma-separated values
-#* @param plot_type Dropdown selection ("scatter", "line", or "histogram")
-#* @param csv_values Comma-separated numeric values (e.g., "10,15,20,25,30")
+#* @param plot_type2 Dropdown selection ("scatter", "line", or "histogram")
+#* @param csv_values2 Comma-separated numeric values (e.g., "10,15,20,25,30")
 #* @get /generate_plot
 #* @serializer png
-function(plot_type = "scatter", csv_values = "") {
+function(plot_type2 = "scatter", csv_values2 = "") {
   
   # 1. Parse the comma-separated string into a numeric vector
-  vals <- as.numeric(unlist(strsplit(csv_values, ",")))
+  vals <- as.numeric(unlist(strsplit(csv_values2, ",")))
   
   # 2. Handle missing or invalid inputs gracefully
   if (length(vals) == 0 || any(is.na(vals))) {
@@ -415,17 +425,17 @@ function(plot_type = "scatter", csv_values = "") {
   x_vals <- seq_along(vals)
   
   # 4. Generate the plot based on dropdown selection
-  if (plot_type == "scatter") {
+  if (plot_type2 == "scatter") {
     plot(x_vals, vals, main = "Scatter Plot", xlab = "Index", ylab = "Value", 
          pch = 19, col = "blue", type = "p", 
          xlim = c(0.5, length(vals) + 0.5))
          
-  } else if (plot_type == "line") {
+  } else if (plot_type2 == "line") {
     plot(x_vals, vals, main = "Line Chart", xlab = "Index", ylab = "Value", 
          col = "red", type = "l", lwd = 2,
          xlim = c(0.5, length(vals) + 0.5))
          
-  } else if (plot_type == "histogram") {
+  } else if (plot_type2 == "histogram") {
     hist(vals, main = "Histogram", xlab = "Value", col = "lightblue", 
          border = "black")
          
@@ -502,9 +512,6 @@ function(plot_type = "scatter", csv_values = "") {
 #* @serializer json
 function(table_id2 = "", csv_data2 = "", res) {# prints text
 
-  
-
-
   # 1. Validate inputs are not empty
   if (nchar(trimws(table_id2)) == 0 || nchar(trimws(csv_data2)) == 0) {
     res$status <- 400
@@ -521,8 +528,8 @@ function(table_id2 = "", csv_data2 = "", res) {# prints text
   
   # 3. Parse the comma-delimited text into an R Data Frame
   tryCatch({
-   #parsed_data <- read_csv(I(csv_data2)) # 0 rows
-    parsed_data <- read_csv(I(csv_data2),col_names=TRUE) #0 rows 
+   parsed_data <- read_csv(I(csv_data2)) # 0 rows
+    #parsed_data <- read_csv(I(csv_data2),col_names=TRUE) #0 rows 
   }, error = function(e) {
     res$status <- 400
     return(list(status = "error", message = paste("Failed to parse CSV text:", e$message)))
