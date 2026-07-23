@@ -97,7 +97,9 @@ html_content <- '
   <option value="hist">Histogram</option>
   <option value="scatter">Scatter Plot</option>
   <option value="line">Line Plot</option>
-
+  <option value="density">Density Plot</option>
+  <option value="boxplot">Boxplot</option>
+  <option value="stripchart">Stripchart</option>   
 </select>
 <br><br>
      
@@ -439,7 +441,28 @@ function(plot_type2 = "scatter", csv_values2 = "") {
     hist(vals, main = "Histogram", xlab = "Value", col = "lightblue", 
          border = "black")
          
-  } else {
+  } else if (plot_type2 == "density"){
+    dens <- density(vals)
+
+  # Plot density curve
+  plot(dens,
+     main = "Density Plot (Base R)",
+     xlab = "Value",
+     ylab = "Density",
+     col = "blue",
+     lwd = 2)
+
+  # Add a rug plot to show actual data points
+  rug(vals, col = "darkgray")
+
+  }
+    else if (plot_type2 == "stripchart"){
+      stripchart(vals)
+    }
+    else if (plot_type2 == "boxplot"){
+      boxplot(vals)
+    }
+    else {
     plot.new()
     text(0.5, 0.5, "Unknown plot type.", col = "red")
   }
@@ -511,7 +534,9 @@ function(plot_type2 = "scatter", csv_values2 = "") {
 #* @get /upload2
 #* @serializer json
 function(table_id2 = "", csv_data2 = "", res) {# prints text
-
+ cat(table_id2,csv_data2)
+ #cat("Original filename:", file_info$filename, "\n")
+ 
   # 1. Validate inputs are not empty
   if (nchar(trimws(table_id2)) == 0 || nchar(trimws(csv_data2)) == 0) {
     res$status <- 400
