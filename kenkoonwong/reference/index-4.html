@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>R Plumber Plot Example</title>
+  <style>
+    #plot-container img {
+      max-width: 100%;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h2>Generate Plot from R</h2>
+  <input type="text" id="numbers" placeholder="Enter numbers (e.g., 1,2,3,4,5)">
+  <button id="generate">Generate Plot</button>
+  
+  <div id="plot-container"></div>
+  <a id="download-link" href="#" download="plot_data.csv" style="display:none;">Download CSV</a>
+
+  <script>
+    document.getElementById("generate").addEventListener("click", function() {
+      const nums = document.getElementById("numbers").value || "1,2,3,4,5";
+      const plotUrl = `http://localhost:8000/plot?x=${encodeURIComponent(nums)}`;
+      const downloadUrl = `http://localhost:8000/download?x=${encodeURIComponent(nums)}`;
+
+      // Display plot
+      document.getElementById("plot-container").innerHTML = `<img src="${plotUrl}" alt="Generated Plot">`;
+
+      // Enable download link
+      const dl = document.getElementById("download-link");
+      dl.href = downloadUrl;
+      dl.style.display = "inline-block";
+    });
+  </script>
+</body>
+</html>

@@ -19,7 +19,7 @@ html_content='
 <body>
 
     <h2>Vector data Plot </h2>
-    <form id="myForm" action="/Rplot" method="post">
+    <form id="myForm" action="http://127.0.0.1:8000/Rplot" method="post">
         <!-- Input for the CSV text -->
         <label for="plot_id2">Desired MySQL Table Name:</label><br>
         <input type="text" id="plot_id2" name="plot_id2" required placeholder="e.g., customer_logs"><br><br>
@@ -56,7 +56,7 @@ form.addEventListener("submit", async (e) => {
 
     // 3. Send the POST request
     try {
-        const response = await fetch("http://127.0.0.1:8000", {
+        const response = await fetch("http://127.0.0.1:8000/Rplot", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

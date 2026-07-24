@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>R Plumber Plot Example</title>
+</head>
+<body>
+  <h2>Send Data to R and Get Plot</h2>
+  <form id="plotForm">
+    X values (comma-separated): <input type="text" name="x" value="1,2,3,4"><br><br>
+    Y values (comma-separated): <input type="text" name="y" value="2,4,6,8"><br><br>
+    <button type="submit">Generate Plot</button>
+  </form>
+
+  <h3>Plot Output:</h3>
+  <img id="plotImage" style="max-width:600px; display:none;" alt="Generated Plot">
+  <br>
+  <a id="downloadLink" href="#" download="plot.png" style="display:none;">Download Plot</a>
+
+  <script>
+    document.getElementById("plotForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const formData = new FormData(e.target);
+      const params = new URLSearchParams();
+      for (const pair of formData.entries()) {
+        params.append(pair[0], pair[1]);
+      }
+
+      fetch("http:/127.0.0.1:8000/plot", {
+        method: "POST",
+        body: params
+      })
+      .then(response => {
+        if (!response.ok) throw new Error("Error generating plot");
+        return response.blob();
+      })
+      .then(blob => {
+        const imgUrl = URL.createObjectURL(blob);
+        document.getElementById("plotImage").src = imgUrl;
+        document.getElementById("plotImage").style.display = "block";
+
+        // Set download link
+        document.getElementById("downloadLink").href = "http:/127.0.0.1:8000/download";
+        document.getElementById("downloadLink").style.display = "inline";
+      })
+      .catch(err => alert(err.message));
+    });
+  </script>
+</body>
+</html>

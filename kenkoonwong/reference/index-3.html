@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>R Plumber Plot Example</title>
+  <style>
+    #plot-container img {
+      max-width: 100%;
+      border: 1px solid #ccc;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Generate Plot from R</h2>
+  
+  <label>X values (comma-separated):</label>
+  <input type="text" id="xvals" value="1,2,3,4,5"><br><br>
+  
+  <label>Y values (comma-separated):</label>
+  <input type="text" id="yvals" value="2,4,1,8,7"><br><br>
+  
+  <button id="generateBtn">Generate Plot</button>
+  
+  <div id="plot-container"></div>
+  <div id="download-container"></div>
+  
+  <script>
+    document.getElementById("generateBtn").addEventListener("click", function() {
+      const x = document.getElementById("xvals").value;
+      const y = document.getElementById("yvals").value;
+      
+      // Display plot
+      const img = document.createElement("img");
+      img.src = `http://localhost:8000/plot?x=${encodeURIComponent(x)}&y=${encodeURIComponent(y)}`;
+      
+      const plotContainer = document.getElementById("plot-container");
+      plotContainer.innerHTML = "";
+      plotContainer.appendChild(img);
+      
+      // Create download button
+      const downloadBtn = document.createElement("a");
+      downloadBtn.href = `http://localhost:8000/download?x=${encodeURIComponent(x)}&y=${encodeURIComponent(y)}`;
+      downloadBtn.download = "plot.png";
+      downloadBtn.textContent = "Download Plot";
+      downloadBtn.style.display = "inline-block";
+      downloadBtn.style.marginTop = "10px";
+      
+      const downloadContainer = document.getElementById("download-container");
+      downloadContainer.innerHTML = "";
+      downloadContainer.appendChild(downloadBtn);
+    });
+  </script>
+</body>
+</html>

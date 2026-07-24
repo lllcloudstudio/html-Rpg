@@ -88,6 +88,35 @@ html_content <- '
         <input type="submit" value="File Upload">
     </form>
 
+<input type="file" id="fileUpload1" />
+<button onclick="displayFilename()">Get Filename</button>
+<p id="filenameDisplay1"></p>
+
+<script>
+  function displayFilename() {
+    const fileUpload1 = document.getElementById("fileUpload1");
+    const filenameDisplay1 = document.getElementById("filenameDisplay1");
+
+    if (fileUpload1.value) {
+      filenameDisplay1.textContent = "Selected Filename: " + fileUpload1.value;
+    } else {
+      filenameDisplay1.textContent = "No file selected.";
+    }
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
     <h2>Vector data Plot </h2>
     <form action="http://127.0.0.1:8000/generate_plot" method="get">
  
@@ -436,8 +465,8 @@ function(plot_type2 = "scatter", csv_values2 = "") {
     plot(x_vals, vals, main = "Line Chart", xlab = "Index", ylab = "Value", 
          col = "red", type = "l", lwd = 2,
          xlim = c(0.5, length(vals) + 0.5))
-         
-  } else if (plot_type2 == "histogram") {
+         ######################
+  } else if (plot_type2 == "hist") {
     hist(vals, main = "Histogram", xlab = "Value", col = "lightblue", 
          border = "black")
          
@@ -534,7 +563,7 @@ function(plot_type2 = "scatter", csv_values2 = "") {
 #* @get /upload2
 #* @serializer json
 function(table_id2 = "", csv_data2 = "", res) {# prints text
- cat(table_id2,csv_data2)
+ #cat(table_id2,csv_data2)
  #cat("Original filename:", file_info$filename, "\n")
  
   # 1. Validate inputs are not empty
@@ -553,8 +582,10 @@ function(table_id2 = "", csv_data2 = "", res) {# prints text
   
   # 3. Parse the comma-delimited text into an R Data Frame
   tryCatch({
+
    parsed_data <- read_csv(I(csv_data2)) # 0 rows
-    #parsed_data <- read_csv(I(csv_data2),col_names=TRUE) #0 rows 
+    #parsed_data <- read_csv(I(csv_data2),col_names=TRUE) #0 rows
+   #parsed_data <- read_csv() 
   }, error = function(e) {
     res$status <- 400
     return(list(status = "error", message = paste("Failed to parse CSV text:", e$message)))
@@ -583,16 +614,19 @@ function(table_id2 = "", csv_data2 = "", res) {# prints text
     dbname   = "REFERENCE"
   )
   #on.exit(dbDisconnect(con))
-  
+  #if (nrow(my_df) == 0) stop("No data to insert")
+  dbExistsTable(con, clean_table_name)
   # 5. Dynamically write data as a table to MySQL
   tryCatch({
     dbWriteTable(
       conn = con, 
       name = clean_table_name,     # Dynamic table name from the form input
       value = parsed_data, 
-      append=TRUE, #      #overwrite=TRUE,   
+      #append=TRUE, # or overwrite=TRUE,   
             # Use append=TRUE to add rows, or overwrite=TRUE to drop and recreate the table
-      row.names = FALSE
+      row.names = FALSE,
+      overwrite=TRUE,# ok--
+      verbose=TRUE#,field.types=TRUE
     )
     
     return(list(
