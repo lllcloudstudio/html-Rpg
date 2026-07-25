@@ -6,6 +6,7 @@ library(kableExtra)
 library(knitr)
 library(utils)
 library(graphics)
+library(shiny)
 
 #* @apiTitle 
 #* @apiDescription
@@ -19,9 +20,21 @@ function() {
 html_content <- '
 <!DOCTYPE html>
 <html>
+
+
+
 <head>
+
     <meta charset="UTF-8">
-    <title>Download MySQL Query Result</title>
+<style>
+
+      #shiny-container {
+        width: 100%;
+        height: 600px;
+        border: none;
+      }
+</style>
+  <title>Plumber + Shiny</title>
 </head>
 <body>
     <h2>Run SQL Query and Download CSV</h2>
@@ -109,6 +122,19 @@ html_content <- '
 
 
 
+  <!--<div>-->
+  <form id="playDrawnDataSimulator" action="https://127.0.0.1:8000/playDrawnDataSimulator" method="get">
+  <!-- <iframe id="shiny-container" src="https://127.0.0.1:8081"></iframe>-->
+  <input type="submit" value="Play Drawn Data Simulator">
+  <!-- <button onclick="playDrawnDataSimulator()"> Draw Plot </button>-->
+  </form>
+  <!--</div>-->
+
+<script>
+</script>
+
+
+
 
 
 
@@ -132,9 +158,6 @@ html_content <- '
 </select>
 <br><br>
      
-
-
-
         <!-- Input for the CSV text -->
         <label for="csv_values2">Paste Comma-Delimited Data (Include Headers):</label><br>
         <textarea id="csv_values2" name="csv_values2" rows="10" cols="50" required placeholder="10,30,10,25"></textarea>
@@ -151,6 +174,10 @@ html_content <- '
 '
   return(html_content)
 }
+
+
+
+
 
 
 #* @get /download
@@ -641,3 +668,7 @@ function(table_id2 = "", csv_data2 = "", res) {# prints text
 }
 
 
+
+#* @get /playDrawnDataSimulator
+
+shiny::runApp("/Users/aflac/Documents/GitHub/html-Rpg/plumber-Rshiny/app.R",port=8081,launch.browser=FALSE)
