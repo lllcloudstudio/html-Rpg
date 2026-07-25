@@ -19,7 +19,8 @@ html_content='
 <body>
 
     <h2>Vector data Plot </h2>
-    <form id="myForm" action="https://127.0.0.1:8000/Rplot" method="post">
+    <!--<form id="myForm" action="https://127.0.0.1:8000/Rplot" method="post">-->
+    <form id="myForm">
         <!-- Input for the CSV text -->
         <label for="plot_id2">Desired MySQL Table Name:</label><br>
         <input type="text" id="plot_id2" name="plot_id2" required placeholder="e.g., customer_logs"><br><br>
@@ -31,16 +32,23 @@ html_content='
 
         <input type="submit" value="Create Rplot">
     </form>
-<!-- <img id="plot" style="border:1px solid #444; max-width:500px;"> -->
+
+
+<img id="plot" style="border:1px solid #444; max-width:500px;">
 
 <br><br>
+
+<script>
+
+</script>
+
 <script>
 const form = document.getElementById("myForm");
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const textarea = form.elements["csv_data3"]; // e.g., "apple, orange, banana"
-    const dropdown = form.elements["plot_id2"];
+    const textarea = form.elements["csv_data3"]; // e.g., "apple, orange, banana" //document.getElementById("csv_data3"); 
+    const dropdown = form.elements["plot_id2"];//document.getElementById("plot_id2");
 
     // 1. Split by commas, trim spaces, and filter empty strings
     const jsonArray = textarea.value // text
@@ -66,13 +74,16 @@ form.addEventListener("submit", async (e) => {
 
     if (!response.ok) {
       alert("Error: " + await response.text()); // by post to Rplot as JSON stringify
-      return;
+      return; // ok const response check data type i.e. text or stringify 
     }
+    const result = await response.json(); // result: good to log not appl.
+    console.log("Server response:", result);
 
-    
+    const blob = await response.blob(); // out of if and try 
+    const url = URL.createObjectURL(blob);
+    document.getElementById("plot").src = url;    
 
-        const result = await response.json(); // 
-        console.log("Server response:", result);
+
     } catch (error) { ///////////////
         console.error("Fetch Failed:", error);
     }
@@ -89,31 +100,38 @@ form.addEventListener("submit", async (e) => {
 return(html_content)
 }
 
-#* @apiTitle JSON Array Processor
 
-#* Process the incoming JSON payload or as /submit
+
+
+#* Create a plot from CSV numeric values
 #* @post /Rplot
-#* @serializer json
-function(csv_array, dropdown_option) {
-  # csv_array automatically arrives as a native R character vector
-  # dropdown_option arrives as a single character string
-  vector_data=c(1,2,3,4,5)
-  print(toupper(vector_data))
-  print(csv_array) # no
-  print(dropdown_option) # no
-  # Example operations in R:
-  item_count <- length(csv_array)
-  upper_items <- toupper(csv_array)
-  print(item_count) # [1] 5
-  print(upper_items) # [1] "1" "2" "3" "4" "5"
+#* @serializer png
+function(req) {
+  # Extract the raw POST body
+  body <- req$postBody
+  print(body)
+  print(length(body))
+  # Basic validation
+  if (is.null(body) || nchar(body) == 0) {
+    stop("Empty input. Provide comma-separated values.")
+  }
   
-
-  # Return a response list (automatically converted back to JSON)
-  #list(
-    #status = "success",
-    #message = paste("Processed", item_count, "items for option", dropdown_option),
-    #received_items = upper_items,
-    #selected_option = dropdown_option
-  #)
+  # Split CSV and convert to numeric
+  values <- strsplit(body, ",")[[1]]
+  values <- trimws(values)
   
+  # Validate numeric values
+  nums <- suppressWarnings(as.numeric(values))
+  if (any(is.na(nums))) {
+    stop("Invalid numeric values. Ensure all entries are numbers.")
+  }
+  
+  # Produce a simple plot
+  plot(
+    nums,
+    type = "o",
+    main = "Plot of Submitted Values",
+    xlab = "Index",
+    ylab = "Value"
+  )
 }

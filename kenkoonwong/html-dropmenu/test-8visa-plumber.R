@@ -45,7 +45,7 @@ async function sendData() {
       return;
     }
 
-    const blob = await response.blob();
+    const blob = await response.blob(); // out of if and try 
     const url = URL.createObjectURL(blob);
     document.getElementById("plot").src = url;
 

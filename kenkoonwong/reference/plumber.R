@@ -17,13 +17,13 @@ library(jsonlite)
 
 function() {
   # Return HTML code with the log button
-html_content <- '
+html_content ='
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-</head
+</head>
 <body>
 
     <h2>CSV text area Upload to MySQL</h2>
@@ -98,7 +98,7 @@ async function sendData() {
 
 ## blank png img 
 #* @post /process
-#* serializer json
+#### serializer json
 #* serializer png
 function(req) {
     

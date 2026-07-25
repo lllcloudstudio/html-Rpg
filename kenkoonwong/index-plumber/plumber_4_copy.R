@@ -31,7 +31,7 @@ html_content='
 
         <input type="submit" value="Create Rplot">
     </form>
-<!-- <img id="plot" style="border:1px solid #444; max-width:500px;"> -->
+<img id="plot" style="border:1px solid #444; max-width:500px;">
 
 <br><br>
 <script>
@@ -66,13 +66,16 @@ form.addEventListener("submit", async (e) => {
 
     if (!response.ok) {
       alert("Error: " + await response.text()); // by post to Rplot as JSON stringify
-      return;
+      return; // ok const response check data type i.e. text or stringify 
     }
+    const result = await response.json(); // result: good to log not appl.
+    console.log("Server response:", result);
 
-    
+    const blob = await response.blob(); // out of if and try 
+    const url = URL.createObjectURL(blob);
+    document.getElementById("plot").src = url;    
 
-        const result = await response.json(); // 
-        console.log("Server response:", result);
+
     } catch (error) { ///////////////
         console.error("Fetch Failed:", error);
     }
@@ -94,6 +97,7 @@ return(html_content)
 #* Process the incoming JSON payload or as /submit
 #* @post /Rplot
 #* @serializer json
+###########* @serializer png
 function(csv_array, dropdown_option) {
   # csv_array automatically arrives as a native R character vector
   # dropdown_option arrives as a single character string
@@ -106,6 +110,7 @@ function(csv_array, dropdown_option) {
   upper_items <- toupper(csv_array)
   print(item_count) # [1] 5
   print(upper_items) # [1] "1" "2" "3" "4" "5"
+  plot(csv_array)
   
 
   # Return a response list (automatically converted back to JSON)
