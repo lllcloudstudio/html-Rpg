@@ -670,5 +670,7 @@ function(table_id2 = "", csv_data2 = "", res) {# prints text
 
 
 #* @get /playDrawnDataSimulator
-
-shiny::runApp("/Users/aflac/Documents/GitHub/html-Rpg/plumber-Rshiny/app.R",port=8081,launch.browser=FALSE)
+##### addition not compatible with runApp command line 675
+####* @shiny /app/
+shiny::runApp("/Users/aflac/Documents/GitHub/html-Rpg/app/app.R",port=8081,launch.browser=FALSE) # port 3838 8080
+#shiny::shinyAppDir('/Users/aflac/Documents/GitHub/html-Rpg/app')

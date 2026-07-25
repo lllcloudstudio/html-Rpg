@@ -1,47 +1,3 @@
-# plumber.R
-library(plumber)
-
-#* @get /
-#### or #* @serializer html
-#* @html
-function() {
-  # HTML page with Shiny app embedded in a <div> via iframe
-  html <- '
-  <!DOCTYPE html>
-  <html>
-  <head>
-    <title>Plumber + Shiny</title>
-    <style>
-      #shiny-container {
-        width: 100%;
-        height: 600px;
-        border: none;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>My Plumber API Page</h1>
-    <div>
-      <iframe id="shiny-container" src="https://127.0.0.1:8081"></iframe>
-    </div>
-
-
-
-
-
-
-
-  </body>
-  </html>
-  '
-  html
-}
-
-# Run API
-# pr <- plumb("plumber.R")
-# pr$run(port = 8000)
-
-#* @get /
 library(shiny)
 library(ggplot2)
 
@@ -208,3 +164,4 @@ server <- function(input, output, session) {
 
 shinyApp(ui, server)
 
+#shiny::runApp("C:\Users\aflac\Documents\GitHub\html-Rpg\plumber-Rshiny\app.R",port=8081,launch.browser=FALSE)
