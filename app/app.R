@@ -5,6 +5,9 @@ canvas_w <- 600
 canvas_h <- 400
 class_cols <- c(A = "blue", B = "green", C = "red", D = "orange")
 
+
+
+
 ui <- fluidPage(
   tags$h3("Draw Points for Multiple Classes"),
   
