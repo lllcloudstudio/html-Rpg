@@ -1,0 +1,46 @@
+
+
+
+#* Return HTML content
+#* @get /
+#* @serializer html
+
+function() {
+  # Return HTML code with the log button
+html_content <- '
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MySQL Tables Viewer</title>
+    <!-- Load htmx to handle ajax swaps without writing JavaScript -->
+    <script src="https://unpkg.com"></script>
+    <style>
+        body { font-family: system-ui, sans-serif; margin: 40px; background: #f9f9f9; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #0056b3; }
+        .table-box { background: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-top: 20px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+
+    <h1>Database Dashboard</h1>
+    
+    <!-- This triggers a POST request to Plumber and targets the <p> tag below -->
+    <button hx-post="http://localhost:8000/fetch_tables" hx-target="#table-container">
+        Load MySQL Tables
+    </button>
+
+    <!-- The exact <p> tag where the list of tables will be inserted -->
+    <p id="table-container">
+        <em>Tables have not been loaded yet. Click the button above.</em>
+    </p>
+
+</body>
+</html>
+'
+  return(html_content)
+}
