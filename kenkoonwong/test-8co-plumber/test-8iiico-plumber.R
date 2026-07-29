@@ -102,7 +102,7 @@ html_content <- '
         <input type="submit" value="File Upload">
     </form>
 
-<h1>Optional</h1>
+<h1>Optional</h1> <!-- form = ? -->
 <input type="file" id="fileUpload1" />
 <button onclick="displayFilename()">Get Filename</button>
 <p id="filenameDisplay1"></p>
@@ -119,6 +119,24 @@ html_content <- '
     }
   }
 </script>
+
+<form action="http://127.0.0.1:8000/submitHtml" method="POST"> <!-- sugg. use of filter cors Method not allowed -->
+  <label for="html_content">Enter your HTML tags below:</label><br><br>
+  
+  <!— Use textarea to allow multi-line HTML code inputs —>
+  <textarea id="html_content" name="html_content" rows="6" cols="50">
+<div>
+  <p>This is a paragraph inside a div.</p>
+</div>
+  </textarea>
+  
+  <br><br>
+  <button type="submit">Send HTML via POST</button>
+</form>
+
+
+
+
 
 
 
@@ -167,6 +185,35 @@ html_content <- '
         
         <input type="submit" value="Create R Plot">
     </form>
+
+
+
+
+
+<form id="contactForm">
+    <div>
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" required>
+    </div>
+    <div>
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required>
+    </div>
+    <div>
+      <label for="message">Message:</label>
+      <textarea id="message" name="message" required></textarea>
+    </div>
+    <button type="submit">Send Message</button>
+  </form>
+  <!-- For feedback messages -->
+  <div id="formMessage" style="margin-top: 20px;"></div>
+ 
+  <script src="script.js"></script>
+
+
+
+
+
 
 
 
@@ -492,13 +539,18 @@ function(plot_type2 = "scatter", csv_values2 = "") {
          
   } else if (plot_type2 == "line") {
     plot(x_vals, vals, main = "Line Chart", xlab = "Index", ylab = "Value", 
-         col = "red", type = "l", lwd = 2,
+         col = "red", type = "l", lwd = 3.3,lty=2,cex=2.3,# ,
          xlim = c(0.5, length(vals) + 0.5))
          ######################
   } else if (plot_type2 == "hist") {
-    hist(vals, main = "Histogram", xlab = "Value", col = "lightblue", 
+    from=min(vals)
+    to=max(vals)
+    by=max(vals)/length(vals) # length.out=sum(vals)/length(vals)
+    brks=seq(from,to,by)
+    hist(vals,breaks=brks, main = "Histogram", xlab = "Value", col = "lightblue", 
          border = "black")
-         
+    abline(v=c(mean(vals),median(vals)),lty=c(2,3),lwd=2)
+    legend("topright",legend=c("mean","median"),lty=c(2,3),lwd=2)
   } else if (plot_type2 == "density"){
     dens <- density(vals)
 
@@ -508,7 +560,7 @@ function(plot_type2 = "scatter", csv_values2 = "") {
      xlab = "Value",
      ylab = "Density",
      col = "blue",
-     lwd = 2)
+     lwd = 3)
 
   # Add a rug plot to show actual data points
   rug(vals, col = "darkgray")
@@ -635,3 +687,23 @@ function(table_id2 = "", csv_data2 = "", res) {# prints text
 # Error use plumber2: see /Users/aflac/Downloads/app.R
 # Error in throw_if_func_is_not_a_function(private$func) : 
 # `expr` did not evaluate to a function
+
+
+
+
+
+#* Receive HTML tags from a web form
+#* @param html_content The raw HTML string submitted by the user
+#* @post /submitHtml
+function(html_content = "") {
+  # html_content will contain the raw string: "<div>\n  <p>...</p>\n</div>"
+  
+  # Example: Clean, parse, or log the tags safely
+  message("Received HTML payload: ", html_content)
+  
+  list(
+    status = "Success",
+    received_length = nchar(html_content),
+    preview = html_content
+  )
+}
