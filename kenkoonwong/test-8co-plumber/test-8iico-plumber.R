@@ -22,9 +22,18 @@ html_content <- '
 <head>
     <meta charset="UTF-8">
     <title>Download MySQL Query Result</title>
+    <style>
+        body { font-family: system-ui, sans-serif; margin: 40px; background: #f9f9f9; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #0056b3; }
+        .table-box { background: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-top: 20px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
 </head>
 <body>
-    <h2>Run SQL Query and Download CSV</h2>
+    <h1>Run SQL Query and Download CSV</h1>
 
 
     <input type="text" id="sqlQuery" placeholder="Enter SQL query" style="width:400px;">

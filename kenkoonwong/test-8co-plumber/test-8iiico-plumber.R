@@ -26,18 +26,19 @@ html_content <- '
 <head>
 
     <meta charset="UTF-8">
-<style>
-
-      #shiny-container {
-        width: 100%;
-        height: 600px;
-        border: none;
-      }
-</style>
+    <style>
+        body { font-family: system-ui, sans-serif; margin: 40px; background: #f9f9f9; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #0056b3; }
+        .table-box { background: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-top: 20px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
   <title>Plumber + Shiny</title>
 </head>
 <body>
-    <h2>Run SQL Query and Download CSV</h2>
+    <h1>Run SQL Query and Download CSV</h1>
 
 
     <input type="text" id="sqlQuery" placeholder="Enter SQL query" style="width:400px;">
@@ -70,7 +71,7 @@ html_content <- '
 
 
 
-    <h2>CSV text area Upload to MySQL</h2>
+    <h1>CSV text area Upload to MySQL</h1>
     <form action="http://127.0.0.1:8000/upload" method="get">
         <!-- Input for the MySQL Table Name -->
         <label for="table_id">Desired MySQL Table Name:</label><br>
@@ -88,7 +89,7 @@ html_content <- '
 
 
 <!-- -->
-    <h2>File Upload (CSV) to MySQL</h2>
+    <h1>File Upload (CSV) to MySQL</h1>
     <form action="http://127.0.0.1:8000/upload2" method="get">
         <!-- Input for the MySQL Table Name -->
         <label for="table_id2">Desired MySQL Table Name:</label><br>
@@ -101,6 +102,7 @@ html_content <- '
         <input type="submit" value="File Upload">
     </form>
 
+<h1>Optional</h1>
 <input type="file" id="fileUpload1" />
 <button onclick="displayFilename()">Get Filename</button>
 <p id="filenameDisplay1"></p>
@@ -123,10 +125,10 @@ html_content <- '
 
 
   <!--<div>-->
-  <form id="playDrawnDataSimulator" action="https://127.0.0.1:8000/playDrawnDataSimulator" method="get">
+  <form id="playDrawDataSimulator" action="https://127.0.0.1:8000/playDrawDataSimulator" method="get">
   <!-- <iframe id="shiny-container" src="https://127.0.0.1:8081"></iframe>-->
-  <input type="submit" value="Play Drawn Data Simulator">
-  <!-- <button onclick="playDrawnDataSimulator()"> Draw Plot </button>-->
+  <input type="submit" value="Play Draw Data Simulator">
+  <!-- <button onclick="playDrawDataSimulator()"> Draw Plot </button>-->
   </form>
   <!--</div>-->
 
@@ -143,7 +145,7 @@ html_content <- '
 
 
 
-    <h2>Vector data Plot </h2>
+    <h1>Vector data Plot </h1>
     <form action="http://127.0.0.1:8000/generate_plot" method="get">
  
 <label for="plot_type2">Distribution Shape:</label>
@@ -529,52 +531,8 @@ function(plot_type2 = "scatter", csv_values2 = "") {
 
 
 
-##* Receive form data via POST
-##* @param csv_data3
-##* @post /Rplot
-##* @serializer json
-#function(csv_data3 = NULL,res) {
-  # Validate inputs
-  #if (is.null(csv_data3)) {
-    #res$status <- 400
-    #return(list(error = "csv_data3 required."))
-  #}
 
 
-
-  # Split CSV and convert to numeric
-  #values <- strsplit(body, ",")[[1]] #########
-  #values <- trimws(values)
-  
-  # Validate numeric values
-  #nums <- suppressWarnings(as.numeric(values))
-  #if (any(is.na(nums))) {
-    #stop("Invalid numeric values. Ensure all entries are numbers.")
-  #}
-  
-  # Produce a simple plot
-  #plot(
-    #nums,
-    #type = "o",
-    #main = "Plot of Submitted Values",
-    #xlab = "Index",
-    #ylab = "Value"
-  #)
-
-
-
-
-####* Accept form data and return png plot
-####* @parser multi
-####* @serializer png
-####* @post /Rplot
-#function(req,res) {
-  # parse incoming form data
-  #form_data = Rook::Multipart$parse(req)
-  #plot_title=form_data$plot
-  #num_points=as.numeric(form_data$csv_data3)
-  #boxplot(num_points,main=plot_title,col="blue")
-#}
 
 
 
@@ -669,8 +627,11 @@ function(table_id2 = "", csv_data2 = "", res) {# prints text
 
 
 
-#* @get /playDrawnDataSimulator
+#* @get /playDrawDataSimulator
 ##### addition not compatible with runApp command line 675
-####* @shiny /app/
-shiny::runApp("/Users/aflac/Documents/GitHub/html-Rpg/app/app.R",port=8081,launch.browser=FALSE) # port 3838 8080
-#shiny::shinyAppDir('/Users/aflac/Documents/GitHub/html-Rpg/app')
+#* @shiny /app/
+#shiny::runApp("/Users/aflac/Downloads/app.R",port=3838,launch.browser=FALSE) # port 3838 8080 8081
+
+# Error use plumber2: see /Users/aflac/Downloads/app.R
+# Error in throw_if_func_is_not_a_function(private$func) : 
+# `expr` did not evaluate to a function
