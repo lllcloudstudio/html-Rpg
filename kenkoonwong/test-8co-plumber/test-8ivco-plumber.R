@@ -6,6 +6,8 @@ library(kableExtra)
 library(knitr)
 library(utils)
 library(graphics)
+library(shiny)
+library(htmlTable)
 
 #* @apiTitle 
 #* @apiDescription
@@ -19,9 +21,12 @@ function() {
 html_content <- '
 <!DOCTYPE html>
 <html>
+
+
+
 <head>
+
     <meta charset="UTF-8">
-    <title>Download MySQL Query Result</title>
     <style>
         body { font-family: system-ui, sans-serif; margin: 40px; background: #f9f9f9; }
         button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 16px; }
@@ -30,12 +35,15 @@ html_content <- '
         table { border-collapse: collapse; width: 100%; margin-top: 10px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
         th { background-color: #f2f2f2; }
+        label {font-family: system-ui, sans-serif; font-size: 16px;}
     </style>
+  <title>Plumber + Shiny</title>
 </head>
-<body>
 
-    <!-- Target paragraph tag with a unique ID -->
+
+<body>
     <h1> View List of Reference tables</h1>
+   <!-- Target paragraph tag with a unique ID -->
 
     <form id="form1">
     <label for="db_id">Database Name:</label><br>
@@ -76,11 +84,12 @@ html_content <- '
 
 
 
-
     <h1>Run SQL Query and Download CSV</h1>
+
 
     <input type="text" id="sqlQuery" placeholder="Enter SQL query" style="width:400px;">
     <button id="downloadBtn">Download CSV</button> 
+
     <button id= "viewTable" onclick="executeQuery"> View Table </button> <!-- not id="sqlQuery" -->
 
     <script>
@@ -108,7 +117,7 @@ html_content <- '
 
 
 
-    <h2>CSV text area Upload to MySQL</h2>
+    <h1>CSV text area Upload to MySQL</h1>
     <form action="http://127.0.0.1:8000/upload" method="get">
         <!-- Input for the MySQL Table Name -->
         <label for="table_id">Desired MySQL Table Name:</label><br>
@@ -126,7 +135,7 @@ html_content <- '
 
 
 <!-- -->
-    <h2>File Upload (CSV) to MySQL</h2>
+    <h1>File Upload (CSV) to MySQL</h1>
     <form action="http://127.0.0.1:8000/upload2" method="get">
         <!-- Input for the MySQL Table Name -->
         <label for="table_id2">Desired MySQL Table Name:</label><br>
@@ -139,19 +148,117 @@ html_content <- '
         <input type="submit" value="File Upload">
     </form>
 
-    <h2>Vector data Plot </h2>
-    <form action="http://127.0.0.1:8000/generate_plot" method="get">
-        <!-- Input for the MySQL Table Name -->
-        <label for="plot_type">Type of Plot</label><br>
-        <input type="text" id="plot_type" name="plot_type" required placeholder="e.g., boxplot, scatter, line plot"><br><br>
+<h1>Optional</h1> <!-- form = ? -->
+<input type="file" id="fileUpload1" />
+<button onclick="displayFilename()">Get Filename</button>
+<p id="filenameDisplay1"></p>
 
+<script>
+  function displayFilename() {
+    const fileUpload1 = document.getElementById("fileUpload1");
+    const filenameDisplay1 = document.getElementById("filenameDisplay1");
+
+    if (fileUpload1.value) {
+      filenameDisplay1.textContent = "Selected Filename: " + fileUpload1.value;
+    } else {
+      filenameDisplay1.textContent = "No file selected.";
+    }
+  }
+</script>
+
+<form action="http://127.0.0.1:8000/submitHtml" method="POST"> <!-- sugg. use of filter cors Method not allowed -->
+  <label for="html_content">Enter your HTML tags below:</label><br><br>
+  
+  <!— Use textarea to allow multi-line HTML code inputs —>
+  <textarea id="html_content" name="html_content" rows="6" cols="50">
+<div>
+  <p>This is a paragraph inside a div.</p>
+</div>
+  </textarea>
+  
+  <br><br>
+  <button type="submit">Send HTML via POST</button>
+</form>
+
+
+
+
+
+
+
+
+
+  <!--<div>-->
+  <form id="playDrawDataSimulator" action="https://127.0.0.1:8000/playDrawDataSimulator" method="get">
+  <!-- <iframe id="shiny-container" src="https://127.0.0.1:8081"></iframe>-->
+  <input type="submit" value="Play Draw Data Simulator">
+  <!-- <button onclick="playDrawDataSimulator()"> Draw Plot </button>-->
+  </form>
+  <!--</div>-->
+
+<script>
+</script>
+
+
+
+
+
+
+
+
+
+
+
+    <h1>Vector data Plot </h1>
+    <form action="http://127.0.0.1:8000/generate_plot" method="get">
+ 
+<label for="plot_type2">Distribution Shape:</label>
+<select id="plot_type2" name="plot_type2">
+  <option value="" disabled selected> Select a choice ...</option>
+  <option value="hist">Histogram</option>
+  <option value="scatter">Scatter Plot</option>
+  <option value="line">Line Plot</option>
+  <option value="density">Density Plot</option>
+  <option value="boxplot">Boxplot</option>
+  <option value="stripchart">Stripchart</option>   
+</select>
+<br><br>
+     
         <!-- Input for the CSV text -->
-        <label for="csv_values">Paste Comma-Delimited Data (Include Headers):</label><br>
-        <textarea id="csv_values" name="csv_values" rows="10" cols="50" required placeholder="10,30,10,25"></textarea>
+        <label for="csv_values2">Paste Comma-Delimited Data (Include Headers):</label><br>
+        <textarea id="csv_values2" name="csv_values2" rows="10" cols="50" required placeholder="10,30,10,25"></textarea>
         <br><br>
         
         <input type="submit" value="Create R Plot">
     </form>
+
+
+
+
+<h1> Contact form Example </h1>
+<form id="contactForm">
+    <div>
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" required>
+    </div>
+    <div>
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required>
+    </div>
+    <div>
+      <label for="message">Message:</label>
+      <textarea id="message" name="message" required></textarea>
+    </div>
+    <button type="submit">Send Message</button>
+  </form>
+  <!-- For feedback messages -->
+  <div id="formMessage" style="margin-top: 20px;"></div>
+  <script src="script.js"></script>
+
+
+
+
+
 
 
 
@@ -161,6 +268,10 @@ html_content <- '
 '
   return(html_content)
 }
+
+
+
+
 
 
 #* @get /download
@@ -356,13 +467,6 @@ extract_after_first_semicolon <- function(tableQuery) {
 
 
 
-
-
-
-
-
-
-
 #* Dynamically add/create a table in MySQL via GET Form Action
 #* @param table_id:string The name of the MySQL table to create or update
 #* @param csv_data:string The raw CSV text string
@@ -440,20 +544,21 @@ dbReadTable(con, clean_table_name)
   })
 }
 
+
 ####################################################################
 ####################################################################
 ####################################################################
 library(plumber)
 
 #* Generate a plot based on the dropdown type and comma-separated values
-#* @param plot_type Dropdown selection ("scatter", "line", or "histogram")
-#* @param csv_values Comma-separated numeric values (e.g., "10,15,20,25,30")
+#* @param plot_type2 Dropdown selection ("scatter", "line", or "histogram")
+#* @param csv_values2 Comma-separated numeric values (e.g., "10,15,20,25,30")
 #* @get /generate_plot
 #* @serializer png
-function(plot_type = "scatter", csv_values = "") {
+function(plot_type2 = "scatter", csv_values2 = "") {
   
   # 1. Parse the comma-separated string into a numeric vector
-  vals <- as.numeric(unlist(strsplit(csv_values, ",")))
+  vals <- as.numeric(unlist(strsplit(csv_values2, ",")))
   
   # 2. Handle missing or invalid inputs gracefully
   if (length(vals) == 0 || any(is.na(vals))) {
@@ -466,21 +571,47 @@ function(plot_type = "scatter", csv_values = "") {
   x_vals <- seq_along(vals)
   
   # 4. Generate the plot based on dropdown selection
-  if (plot_type == "scatter") {
+  if (plot_type2 == "scatter") {
     plot(x_vals, vals, main = "Scatter Plot", xlab = "Index", ylab = "Value", 
          pch = 19, col = "blue", type = "p", 
          xlim = c(0.5, length(vals) + 0.5))
          
-  } else if (plot_type == "line") {
+  } else if (plot_type2 == "line") {
     plot(x_vals, vals, main = "Line Chart", xlab = "Index", ylab = "Value", 
-         col = "red", type = "l", lwd = 2,
+         col = "red", type = "l", lwd = 3.3,lty=2,cex=2.3,# ,
          xlim = c(0.5, length(vals) + 0.5))
-         
-  } else if (plot_type == "histogram") {
-    hist(vals, main = "Histogram", xlab = "Value", col = "lightblue", 
+         ######################
+  } else if (plot_type2 == "hist") {
+    from=min(vals)
+    to=max(vals)
+    by=max(vals)/length(vals) # length.out=sum(vals)/length(vals)
+    brks=seq(from,to,by)
+    hist(vals,breaks=brks, main = "Histogram", xlab = "Value", col = "lightblue", 
          border = "black")
-         
-  } else {
+    abline(v=c(mean(vals),median(vals)),lty=c(2,3),lwd=2)
+    legend("topright",legend=c("mean","median"),lty=c(2,3),lwd=2)
+  } else if (plot_type2 == "density"){
+    dens <- density(vals)
+
+  # Plot density curve
+  plot(dens,
+     main = "Density Plot (Base R)",
+     xlab = "Value",
+     ylab = "Density",
+     col = "blue",
+     lwd = 3)
+
+  # Add a rug plot to show actual data points
+  rug(vals, col = "darkgray")
+
+  }
+    else if (plot_type2 == "stripchart"){
+      stripchart(vals)
+    }
+    else if (plot_type2 == "boxplot"){
+      boxplot(vals)
+    }
+    else {
     plot.new()
     text(0.5, 0.5, "Unknown plot type.", col = "red")
   }
@@ -491,52 +622,8 @@ function(plot_type = "scatter", csv_values = "") {
 
 
 
-##* Receive form data via POST
-##* @param csv_data3
-##* @post /Rplot
-##* @serializer json
-#function(csv_data3 = NULL,res) {
-  # Validate inputs
-  #if (is.null(csv_data3)) {
-    #res$status <- 400
-    #return(list(error = "csv_data3 required."))
-  #}
 
 
-
-  # Split CSV and convert to numeric
-  #values <- strsplit(body, ",")[[1]] #########
-  #values <- trimws(values)
-  
-  # Validate numeric values
-  #nums <- suppressWarnings(as.numeric(values))
-  #if (any(is.na(nums))) {
-    #stop("Invalid numeric values. Ensure all entries are numbers.")
-  #}
-  
-  # Produce a simple plot
-  #plot(
-    #nums,
-    #type = "o",
-    #main = "Plot of Submitted Values",
-    #xlab = "Index",
-    #ylab = "Value"
-  #)
-
-
-
-
-####* Accept form data and return png plot
-####* @parser multi
-####* @serializer png
-####* @post /Rplot
-#function(req,res) {
-  # parse incoming form data
-  #form_data = Rook::Multipart$parse(req)
-  #plot_title=form_data$plot
-  #num_points=as.numeric(form_data$csv_data3)
-  #boxplot(num_points,main=plot_title,col="blue")
-#}
 
 
 
@@ -552,10 +639,9 @@ function(plot_type = "scatter", csv_values = "") {
 #* @get /upload2
 #* @serializer json
 function(table_id2 = "", csv_data2 = "", res) {# prints text
-
-  
-
-
+ #cat(table_id2,csv_data2)
+ #cat("Original filename:", file_info$filename, "\n")
+ 
   # 1. Validate inputs are not empty
   if (nchar(trimws(table_id2)) == 0 || nchar(trimws(csv_data2)) == 0) {
     res$status <- 400
@@ -572,8 +658,10 @@ function(table_id2 = "", csv_data2 = "", res) {# prints text
   
   # 3. Parse the comma-delimited text into an R Data Frame
   tryCatch({
-   #parsed_data <- read_csv(I(csv_data2)) # 0 rows
-    parsed_data <- read_csv(I(csv_data2),col_names=TRUE) #0 rows 
+
+   parsed_data <- read_csv(I(csv_data2)) # 0 rows
+    #parsed_data <- read_csv(I(csv_data2),col_names=TRUE) #0 rows
+   #parsed_data <- read_csv() 
   }, error = function(e) {
     res$status <- 400
     return(list(status = "error", message = paste("Failed to parse CSV text:", e$message)))
@@ -602,16 +690,19 @@ function(table_id2 = "", csv_data2 = "", res) {# prints text
     dbname   = "REFERENCE"
   )
   #on.exit(dbDisconnect(con))
-  
+  #if (nrow(my_df) == 0) stop("No data to insert")
+  dbExistsTable(con, clean_table_name)
   # 5. Dynamically write data as a table to MySQL
   tryCatch({
     dbWriteTable(
       conn = con, 
       name = clean_table_name,     # Dynamic table name from the form input
       value = parsed_data, 
-      append=TRUE, #      #overwrite=TRUE,   
+      #append=TRUE, # or overwrite=TRUE,   
             # Use append=TRUE to add rows, or overwrite=TRUE to drop and recreate the table
-      row.names = FALSE
+      row.names = FALSE,
+      overwrite=TRUE,# ok--
+      verbose=TRUE#,field.types=TRUE
     )
     
     return(list(
@@ -626,18 +717,40 @@ function(table_id2 = "", csv_data2 = "", res) {# prints text
 }
 
 
+#* Draw plots 
+#* @get /playDrawDataSimulator
+##### addition not compatible with runApp command line 675
+#* @shiny /app/
+#shiny::runApp("/Users/aflac/Downloads/app.R",port=3838,launch.browser=FALSE) # port 3838 8080 8081
 
-#* Enable CORS so your frontend can talk to the API
-#* @filter cors
-function(res) {
-  res$setHeader("Access-Control-Allow-Origin", "*")
-  forward()
+# Error use plumber2: see /Users/aflac/Downloads/app.R
+# Error in throw_if_func_is_not_a_function(private$func) : 
+# `expr` did not evaluate to a function
+
+
+
+
+
+#* Receive HTML tags from a web form
+#* @param html_content The raw HTML string submitted by the user
+#* @post /submitHtml
+function(html_content = "") {
+  # html_content will contain the raw string: "<div>\n  <p>...</p>\n</div>"
+  
+  # Example: Clean, parse, or log the tags safely
+  message("Received HTML payload: ", html_content)
+  
+  list(
+    status = "Success",
+    received_length = nchar(html_content),
+    preview = html_content
+  )
 }
 
 #* Get list of tables
 #* @get /tables
 #* @serializer text
-function(db_name = "reference") { # default since no form to specify ok-- now input to just reference
+function(db_name = "") { # default reference or "" since no form to specify ok-- now input to just reference
   # Connect to the database specified in the GET query
   drv=MySQL()
   con <- dbConnect(
@@ -658,3 +771,57 @@ function(db_name = "reference") { # default since no form to specify ok-- now in
   # Return tables as a clean comma-separated string
   paste(tables, collapse = ", ")
 }
+
+
+
+
+#* List tables of a database
+#* @param db_id:string
+#* @get /tablesByForm
+#* @serializer json
+function(db_id="",res){
+  print(db_id)
+  if (nchar(trimws(table_id)) == 0 || nchar(trimws(csv_data)) == 0) {
+    res$status <- 400
+    return(list(status = "error", message = "Both Table Name and CSV data fields are required."))
+  }
+  clean_db_name <- gsub("[^a-zA-Z0-9_]", "", db_id)
+  if (nchar(clean_db_name) == 0) {
+    res$status <- 400
+    return(list(status = "error", message = "Invalid table name. Use only letters, numbers, and underscores."))
+  }
+  print(clean_db_name)
+  # 4. Connect to MySQL database
+  drv=MySQL()
+  con <- dbConnect(
+    drv,
+    host     = "127.0.0.1",
+    port     = 3306,
+    username = "root",
+    password = "189999",
+    dbname   = clean_db_name
+  )
+
+  tryCatch({
+    my_tables=dbListTables(con)
+
+paste(my_tables, collapse = ", ")
+  # Convert the R data frame object into an HTML table string
+    #html_table_string <- htmlTable(my_tables, title = "Motor Trend Car Road Tests")
+    #return(html_table_string)
+    return(list(status="success",message=paste0("Successfully can list tables for database: ",clean_db_name)))
+  }, error = function(e) {
+    res$status <- 500
+    return(list(status = "error", message = paste("MySQL Table generation failed:", e$message)))
+  }
+  )
+
+  #on.exit(dbDisconnect(con))
+  
+
+
+}
+
+
+
+
