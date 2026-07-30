@@ -1,0 +1,17 @@
+<html>
+<head>
+</head>
+<body>
+<p id="table-output">Loading tables...</p>
+
+<script>
+  // Choose GET or POST
+  fetch('http://localhost:8000/tables', { method: 'GET' })
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById('table-output').innerText = data;
+    })
+    .catch(error => console.error('Error:', error));
+</script>
+</body>
+</html>

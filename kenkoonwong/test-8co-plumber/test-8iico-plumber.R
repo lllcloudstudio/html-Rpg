@@ -33,12 +33,56 @@ html_content <- '
     </style>
 </head>
 <body>
-    <h1>Run SQL Query and Download CSV</h1>
 
+    <!-- Target paragraph tag with a unique ID -->
+    <h1> View List of Reference tables</h1>
+
+    <form id="form1">
+    <label for="db_id">Database Name:</label><br>
+    <input type="text" id="db_id" name="db_id" required placeholder="e.g., reference"><br><br>
+    <input type="submit" value="View Tables">
+    </form>
+
+    <p id="my-database-tables">Fetching data from API...</p>
+
+    <script>
+        // Define the target database file
+        // Not a form 
+        document.getElementById("form1").addEventListener("submit", function(event) {
+            event.preventDefault(); // Stop page from reloading
+
+        const dbName = "reference";
+      
+        // Append the parameter directly to the GET URL string
+        const apiUrl = "http://localhost:8000/tables?db_name=${encodeURIComponent(dbName)}";
+
+        // Execute the GET request
+        fetch(apiUrl, { method: "GET" })
+            .then(response => response.text())
+            .then(textData => {
+                // Display the comma-separated string directly into the <p> tag
+                document.getElementById("my-database-tables").innerText = textData;
+            })
+            .catch(error => {
+                console.error("Error fetching tables:", error);
+                document.getElementById("my-database-tables").innerText = "Error loading tables.";
+            });
+            }); // form 
+    </script>
+
+
+
+
+
+
+
+
+
+
+    <h1>Run SQL Query and Download CSV</h1>
 
     <input type="text" id="sqlQuery" placeholder="Enter SQL query" style="width:400px;">
     <button id="downloadBtn">Download CSV</button> 
-
     <button id= "viewTable" onclick="executeQuery"> View Table </button> <!-- not id="sqlQuery" -->
 
     <script>
@@ -584,3 +628,35 @@ function(table_id2 = "", csv_data2 = "", res) {# prints text
 }
 
 
+
+#* Enable CORS so your frontend can talk to the API
+#* @filter cors
+function(res) {
+  res$setHeader("Access-Control-Allow-Origin", "*")
+  forward()
+}
+
+#* Get list of tables
+#* @get /tables
+#* @serializer text
+function(db_name = "reference") { # default since no form to specify ok-- now input to just reference
+  # Connect to the database specified in the GET query
+  drv=MySQL()
+  con <- dbConnect(
+    drv,
+    host     = "127.0.0.1",
+    port     = 3306,
+    username = "root",
+    password = "189999",
+    dbname   = "reference"
+  )
+  tables <- dbListTables(con)
+  dbDisconnect(con)
+  
+  if (length(tables) == 0) {
+    return("No tables found in this database.")
+  }
+  
+  # Return tables as a clean comma-separated string
+  paste(tables, collapse = ", ")
+}

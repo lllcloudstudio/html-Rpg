@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Display Database Tables</title>
+</head>
+<body>
+
+    <!-- Target paragraph tag with a unique ID -->
+    <p id="my-database-tables">Fetching data from API...</p>
+
+    <script>
+        // Define the target database file
+        const dbName = "reference";
+        
+        // Append the parameter directly to the GET URL string
+        const apiUrl = "http://localhost:8000/tables?db_name=${encodeURIComponent(dbName)}";
+
+        // Execute the GET request
+        fetch(apiUrl, { method: "GET" })
+            .then(response => response.text())
+            .then(textData => {
+                // Display the comma-separated string directly into the <p> tag
+                document.getElementById("my-database-tables").innerText = textData;
+            })
+            .catch(error => {
+                console.error("Error fetching tables:", error);
+                document.getElementById("my-database-tables").innerText = "Error loading tables.";
+            });
+    </script>
+
+</body>
+</html>

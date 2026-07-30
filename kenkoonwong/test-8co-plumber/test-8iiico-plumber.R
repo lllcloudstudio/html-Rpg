@@ -7,6 +7,7 @@ library(knitr)
 library(utils)
 library(graphics)
 library(shiny)
+library(htmlTable)
 
 #* @apiTitle 
 #* @apiDescription
@@ -34,10 +35,40 @@ html_content <- '
         table { border-collapse: collapse; width: 100%; margin-top: 10px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
         th { background-color: #f2f2f2; }
+        label {font-family: system-ui, sans-serif; font-size: 16px;}
     </style>
   <title>Plumber + Shiny</title>
 </head>
+
+
 <body>
+    <h1> View List of Reference tables</h1>
+<p id="table-output">Loading tables...</p>
+
+<script>
+  // Choose GET or POST
+  fetch("http://localhost:8000/tables", { method: "GET" })
+    .then(response => response.text())
+    .then(data => {
+      document.getElementById("table-output").innerText = data;
+    })
+    .catch(error => console.error("Error:", error));
+</script>
+
+
+
+
+
+
+    <form action="https://127.0.0.1:8000/tablesByForm" method="get"> <!-- no form id -->
+    <label for="db_id">Database Name:</label><br>
+    <input type="text" id="db_id" name="db_id" required placeholder="e.g., reference"><br><br>
+    <input type="submit" value="View Tables">
+    <p id="tablesDisplay"></p> <!-- possible omit -->
+    </form>
+
+
+
     <h1>Run SQL Query and Download CSV</h1>
 
 
@@ -189,7 +220,7 @@ html_content <- '
 
 
 
-
+<h1> Contact form Example </h1>
 <form id="contactForm">
     <div>
       <label for="name">Name:</label>
@@ -207,7 +238,6 @@ html_content <- '
   </form>
   <!-- For feedback messages -->
   <div id="formMessage" style="margin-top: 20px;"></div>
- 
   <script src="script.js"></script>
 
 
@@ -422,13 +452,6 @@ extract_after_first_semicolon <- function(tableQuery) {
 
 
 
-
-
-
-
-
-
-
 #* Dynamically add/create a table in MySQL via GET Form Action
 #* @param table_id:string The name of the MySQL table to create or update
 #* @param csv_data:string The raw CSV text string
@@ -505,6 +528,7 @@ dbReadTable(con, clean_table_name)
     return(list(status = "error", message = paste("MySQL Table generation failed:", e$message)))
   })
 }
+
 
 ####################################################################
 ####################################################################
@@ -678,7 +702,7 @@ function(table_id2 = "", csv_data2 = "", res) {# prints text
 }
 
 
-
+#* Draw plots 
 #* @get /playDrawDataSimulator
 ##### addition not compatible with runApp command line 675
 #* @shiny /app/
@@ -707,3 +731,80 @@ function(html_content = "") {
     preview = html_content
   )
 }
+
+#* List tables of reference database
+#* @get /tables
+#* @post /tables
+#* @serializer html
+
+function() {
+    drv=MySQL()
+  con <- dbConnect(
+    drv,
+    host     = "127.0.0.1",
+    port     = 3306,
+    username = "root",
+    password = "189999",
+    dbname   = "reference"
+  )
+
+  tables <- dbListTables(con)
+  dbDisconnect(con)
+  
+  # Return as a comma-separated string or JSON
+  paste(tables, collapse = ", ")
+}
+
+
+
+
+#* List tables of a database
+#* @param db_id:string
+#* @get /tablesByForm
+#* @serializer json
+function(db_id="",res){
+  print(db_id)
+  if (nchar(trimws(table_id)) == 0 || nchar(trimws(csv_data)) == 0) {
+    res$status <- 400
+    return(list(status = "error", message = "Both Table Name and CSV data fields are required."))
+  }
+  clean_db_name <- gsub("[^a-zA-Z0-9_]", "", db_id)
+  if (nchar(clean_db_name) == 0) {
+    res$status <- 400
+    return(list(status = "error", message = "Invalid table name. Use only letters, numbers, and underscores."))
+  }
+  print(clean_db_name)
+  # 4. Connect to MySQL database
+  drv=MySQL()
+  con <- dbConnect(
+    drv,
+    host     = "127.0.0.1",
+    port     = 3306,
+    username = "root",
+    password = "189999",
+    dbname   = clean_db_name
+  )
+
+  tryCatch({
+    my_tables=dbListTables(con)
+
+paste(my_tables, collapse = ", ")
+  # Convert the R data frame object into an HTML table string
+    #html_table_string <- htmlTable(my_tables, title = "Motor Trend Car Road Tests")
+    #return(html_table_string)
+    return(list(status="success",message=paste0("Successfully can list tables for database: ",clean_db_name)))
+  }, error = function(e) {
+    res$status <- 500
+    return(list(status = "error", message = paste("MySQL Table generation failed:", e$message)))
+  }
+  )
+
+  #on.exit(dbDisconnect(con))
+  
+
+
+}
+
+
+
+
