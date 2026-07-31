@@ -1,3 +1,9 @@
+
+#> .libPaths()
+#[1] "C:/Users/aflac/AppData/Local/R/win-library/4.6"
+#[2] "C:/Program Files/R/R-4.6.0/library"
+
+.libPaths(c("C:/Program Files/R/R-4.6.0/library", .libPaths())) 
 library(plumber)
 library(DBI)
 library(RMySQL)
@@ -54,14 +60,18 @@ html_content <- '
         const dbName= document.getElementById("db_id").value; // No: http://127.0.0.1:8000/?db_id=reference
         // Append the parameter directly to the GET URL string
         const apiUrl = "http://localhost:8000/tables?db_name=${encodeURIComponent(dbName)}";
-        // Execute the GET request
+        // 1. Execute the GET request
         fetch(apiUrl, { method: "GET" })
-            .then(response => response.text())
-            .then(textData => {
+            //.then and .catch can be added after fetch if req
+            // 2. 
+            .then(response => response.text()) // known response not json: the response is text
+            .then(textData => { //know textData and input placement define below;  data not response
                 // Display the comma-separated string directly into the <p> tag
-                document.getElementById("my-database-tables").innerText = textData;
+                textData=document.getElementById("my-database-tables").innerText;
+                document.getElementById("my-database-tables").innerText = textData; // apidata def
             })
-            .catch(error => {
+            //3.
+            .catch(error => { //.catch error 
                 console.error("Error fetching tables:", error);
                 document.getElementById("my-database-tables").innerText = "Error loading tables.";
             });
@@ -147,7 +157,7 @@ html_content <- '
 
         <!-- Input for the CSV text -->
         <label for="csv_values">Paste Comma-Delimited Data (Include Headers):</label><br>
-        <textarea id="csv_values" name="csv_values" rows="10" cols="50" required placeholder="10,30,10,25"></textarea>
+        <textarea id="csv_values" name="csv_values" rows="10" cols="50" required placeholder="5.1,4.9,4.7,4.6,5,5.4,4.6,5,4.4,4.9"></textarea>
         <br><br>
         
         <input type="submit" value="Create R Plot">
