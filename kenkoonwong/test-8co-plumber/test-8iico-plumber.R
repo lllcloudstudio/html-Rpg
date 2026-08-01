@@ -266,7 +266,7 @@ extract_after_first_semicolon <- function(query) {
     
   }, error = function(e) { # !!!!
     msg <- paste("Error:", e$message)
-    return(charToRaw(msg))
+    return(charToRaw(msg)) ## return element 
   }, finally = {
     if (!is.null(con)) dbDisconnect(con)
   })
