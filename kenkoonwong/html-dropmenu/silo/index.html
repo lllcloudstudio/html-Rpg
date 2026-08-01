@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+  </style>
+</head>
+<body>
+<!-- <form method="GET" action="https://127.0.0.1:8000/plumber.R/"> 
+<input type="color" name="color">
+<input type="range" name="range" min="1" max="10">
+<input type="time" name="time"><br>
+<input type="url" name="url" size="54" required >
+<p><input type="submit" value="Submit Form"></p>
+</form>-->
+
+<form action="https://127.0.0.1:8000/plumber.R" method="POST" enctype="text/plain">
+  <label for="csv-data">Paste your CSV data here:</label><br>
+  <textarea id="csv-data" name="csv_string" rows="10" cols="50" placeholder="Id,Name,Value&#10;1,TestA,10.5&#10;2,TestB,20.0"></textarea>
+  <br>
+  <button id="BtnCSVtoR" type="submit">Send CSV to R</button>
+</form>
+
+
+</body>
+</html>
