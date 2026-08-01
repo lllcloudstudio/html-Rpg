@@ -9,8 +9,8 @@ function(){
 <head>
 </head>
 <body>
-<!-- empty container <div> or <p> -->
-<p id="resultDisplay"> Waiting for result...</p>
+<!-- empty container <div> or <p> not active with live server, form ?? -->
+<p id="resultDisplay"> Waiting for result...</p> 
 </body>
 </html>'
 return(html_content)

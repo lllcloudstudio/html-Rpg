@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<head>
+</head>
+<body>
+<select id="myDropDown">
+<option value="ny"> New York</option>
+<option value="ct"> Connecticut</option>
+</select>
+<button id="dropDownSelect" onclick="getSelectedValue()">Get Selected Value</button>
+
+<!-- empty container <div> or <p> -->
+<p id="resultDisplay"> Waiting for result...</p>
+
+
+
+<script>
+    document.getElementById("dropDownSelect").addEventListener("click", function() {
+    const dropdown = document.getElementById("myDropDown"); // or const
+    const selectedValue = dropdown.value; // or const
+    console.log("Selected Value:", selectedValue);
+    // Encode query for URL
+    const encodedQuery = encodeURIComponent(selectedValue);
+    // Trigger file download
+    window.location.href = `http://localhost:8000/downloaddropDown?selectedValue=${encodedQuery}`;
+        });
+
+
+        });
+</script>
+<script>
+// to get the selected value from the dropdown and print it to html by <p> 
+function getSelectedValue() {
+  var dropdown = document.getElementById("myDropDown"); // or const
+  var selectedValue = dropdown.value; // or const
+  document.getElementById("resultDisplay").innerHTML = "Selected value to print to html: " + selectedValue;
+  console.log("Selected Value:", selectedValue);
+}
+</script>
+</body>
+</html>

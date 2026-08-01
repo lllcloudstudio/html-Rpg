@@ -6,7 +6,7 @@ library(dplyr)
 #* @post /process-text
 
 
-function(userInput) {
+function(userInput) { # to textarea by live server
   # Perform your R operations here
   processed <- paste("R successfully processed your input:", toupper(userInput))
   print(processed)

@@ -6,7 +6,7 @@
 
 <script>
   // Choose GET or POST
-  fetch('http://localhost:8000/tables', { method: 'GET' })
+  fetch('http://localhost:8000/tables', { method: 'GET' }) // Live server output is: Loading tables... while R plumber is processing the request 
     .then(response => response.text())
     .then(data => {
       document.getElementById('table-output').innerText = data;

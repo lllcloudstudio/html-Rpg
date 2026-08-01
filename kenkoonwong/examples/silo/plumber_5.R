@@ -34,7 +34,7 @@ html_content <- '
 <script>
 //const params = new URLSearchParams();
 //params.append("x_vals", "1,2,3,4,5");
-params.append("y_vals", "10,15,13,17,20");
+//params.append("y_vals", "10,15,13,17,20");
 
 //const url = "http://localhost:8000/plot?${params.toString()}";
 
