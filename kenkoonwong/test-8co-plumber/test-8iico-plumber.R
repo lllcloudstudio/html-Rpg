@@ -67,7 +67,7 @@ html_content <- '
             .then(response => response.text()) // known response not json: the response is text
             .then(textData => { //know textData and input placement define below;  data not response
                 // Display the comma-separated string directly into the <p> tag
-                textData=document.getElementById("my-database-tables").innerText;
+                //textData=document.getElementById("my-database-tables").innerText;
                 document.getElementById("my-database-tables").innerText = textData; // apidata def
             })
             //3.
