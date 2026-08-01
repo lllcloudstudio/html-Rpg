@@ -61,7 +61,8 @@ html_content <- '
         // Append the parameter directly to the GET URL string
         const apiUrl = "http://localhost:8000/tables?db_name=${encodeURIComponent(dbName)}";
         // 1. Execute the GET request
-        fetch(apiUrl, { method: "GET" })
+        fetch(apiUrl, 
+{ method: "GET" })
             //.then and .catch can be added after fetch if req
             // 2. 
             .then(response => response.text()) // known response not json: the response is text
