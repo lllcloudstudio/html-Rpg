@@ -7,16 +7,16 @@ library(RMySQL)
 
 #* Run a SQL query and return the table as JSON
 #* @post /query
-function(req, res) {
+function(req, res) { # NO NULL
   body <- jsonlite::fromJSON(req$postBody)
   sql_query <- body$query
-  
+  drv=MySQL()
   # Connect to your MySQL database
-  con <- dbConnect(RMySQL::MySQL(), 
-                   dbname = "your_db_name",
-                   host = "your_host",
-                   user = "your_username",
-                   password = "your_password")
+  con <- dbConnect(drv, 
+                   dbname = "reference",
+                   host = "127.0.0.1",
+                   user = "root",
+                   password = "189999")
   
   # Execute query (Basic error handling included)
   tryCatch({

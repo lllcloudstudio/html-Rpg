@@ -26,47 +26,47 @@
 
     <script>
         async function executeQuery() {
-            const queryText = document.getElementById('sqlQuery').value;
+            const queryText = document.getElementById("sqlQuery").value;
 
             try {
                 // POST to R Plumber API
-                const response = await fetch('http://localhost:8000/query', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                const response = await fetch("http://localhost:8000/query", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ query: queryText })
                 });
 
-                if (!response.ok) throw new Error('Query execution failed');
+                if (!response.ok) throw new Error("Query execution failed");
 
                 const data = await response.json();
                 renderTable(data);
             } catch (error) {
-                console.error('Error:', error);
-                alert('Error running query. Check console for details.');
+                console.error("Error:", error);
+                alert("Error running query. Check console for details.");
             }
         }
 
         function renderTable(data) {
-            const tableHead = document.getElementById('tableHead');
-            const tableBody = document.getElementById('tableBody');
+            const tableHead = document.getElementById("tableHead");
+            const tableBody = document.getElementById("tableBody");
             
-            tableHead.innerHTML = '';
-            tableBody.innerHTML = '';
+            tableHead.innerHTML = "";
+            tableBody.innerHTML = "";
 
             if (data.length === 0) return;
 
             // Generate Table Headers
             const headers = Object.keys(data[0]);
-            let headerRow = '<tr>';
-            headers.forEach(h => headerRow += `<th>${h}</th>`);
-            headerRow += '</tr>';
+            let headerRow = "<tr>";
+            headers.forEach(h => headerRow += "<th>${h}</th>");
+            headerRow += "</tr>";
             tableHead.innerHTML = headerRow;
 
             // Generate Table Rows
             data.forEach(row => {
-                let tr = '<tr>';
-                headers.forEach(h => tr += `<td>${row[h]}</td>`);
-                tr += '</tr>';
+                let tr = "<tr>";
+                headers.forEach(h => tr += "<td>${row[h]}</td>");
+                tr += "</tr>";
                 tableBody.innerHTML += tr;
             });
         }
