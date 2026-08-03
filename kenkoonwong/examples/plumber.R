@@ -6,7 +6,7 @@
 #* @serializer png
 #* @get /vector-plot
 function(values = "1,2,3,4,5", title = "Default Plot Title") {
-  
+  print(values)
   # 1. Split the comma-separated URL string into an R character vector
   char_vector <- unlist(strsplit(values, split = ","))
   
@@ -15,7 +15,7 @@ function(values = "1,2,3,4,5", title = "Default Plot Title") {
   
   # 3. Clean out any missing or failed parsing values (e.g., letters)
   numeric_vector <- na.omit(numeric_vector)
-  
+  #############################################################
   # 4. Generate the plot inside the active graphics device
   if (length(numeric_vector) > 0) {
     # Customizing the base R plot style
@@ -37,3 +37,4 @@ function(values = "1,2,3,4,5", title = "Default Plot Title") {
          main = "Error: No valid numeric data provided")
   }
 }
+

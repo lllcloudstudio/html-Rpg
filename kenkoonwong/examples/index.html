@@ -8,29 +8,29 @@
 
     <h1>My Dynamic R Dashboard</h1>
 
-    <!— The browser loads the PNG directly from the API endpoint —>
-    <img 
-        id="r-plot" 
-        src="http://127.0.0.1:8000/vector-plot?values=10,25,8,44,30&title=Live%20API%20Data" 
-        alt="R Generated Plot"
-    />
+    <!— 
+    <!--The browser loads the PNG directly from the API endpoint -->
 
 
 
 
 
-<div>
+<div> <!-- NOTE DIV NOT FORM-->
     <label for="dataInput">Enter Numbers (comma-separated):</label>
     <input type="text" id="dataInput" value="12,45,23,67,89">
     
     <label for="titleInput">Plot Title:</label>
     <input type="text" id="titleInput" value="User Trend">
     
-    <button onclick="updatePlot()">Update Chart</button>
+    <button onclick="updatePlot()">Update Chart</button> <!-- WHEN DIV NOT FORM, USE BUTTON onclick?-->
 </div>
 
-<!— The image placeholder —>
-<img id="dynamicPlot" src="" alt="Click update to load chart">
+
+<!- The image placeholder: <img id="dynamicPlot" src="" alt="Click update to load chart"> —>
+    <div id="dynamicPlotDiv">
+        <h3>R Generated Output:</h3>
+        <img id="dynamicPlot" src="" alt="Plot will appear here..." style="max-width:100%; height:auto;"/>
+    </div>
 
 <script>
 function updatePlot() {
@@ -43,16 +43,17 @@ function updatePlot() {
     const encodedTitle = encodeURIComponent(rawTitle);
 
     // 3. Build the full Plumber API URL
-    const apiBaseUrl = "http://127.0.0.1:8000/vector-plot";
+    //const apiBaseUrl = "http://127.0.0.1:8000/vector-plot";
     //const finalUrl = "${encodedValues}&title=${encodedTitle}";
-    const finalUrl = "http://127.0.0.1:8000/vector-plot?values=${encodedValues}&title=${encodedTitle}";
+    const finalUrl = `http://127.0.0.1:8000/vector-plot?values=${encodedValues}&title=${encodedTitle}`;
 
     // 4. Update the img src attribute to force the browser to fetch the new image
     document.getElementById("dynamicPlot").src = finalUrl;
 }
 
 // Optional: Load the plot automatically when the page first loads
-window.onload = updatePlot;
+//window.onload = updatePlot;
+//example plot with defined src at body no <div> embed: <img id="r-plot" src="http://127.0.0.1:8000/vector-plot?values=10,25,8,44,30&title=Live%20API%20Data" alt="R Generated Plot"/>
 </script>
 </body>
 </html>

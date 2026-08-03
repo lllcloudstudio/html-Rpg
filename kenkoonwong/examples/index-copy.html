@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>R Plumber API Plot Loader</title>
+</head>
+<body>
+
+    <!-- 1. Form wrapping the inputs -->
+    <form id="plotForm" onsubmit="updatePlot(event)">
+        <label for="dataInput">Data Values (comma-separated):</label>
+        <input type="text" id="dataInput" value="10,25,8,44,30" required>
+        <br><br>
+
+        <label for="titleInput">Plot Title:</label>
+        <input type="text" id="titleInput" value="Live API Data">
+        <br><br>
+
+        <button type="submit">Generate Plot</button>
+    </form>
+
+    <br>
+
+    <!-- 2. Target <div> containing the image placeholder -->
+    <div id="plotContainer">
+        <h3>R Generated Output:</h3>
+        <img id="dynamicPlot" src="" alt="Plot will appear here..." style="max-width:100%; height:auto;"/>
+    </div>
+
+    <!-- 3. Your modified Plumber API script -->
+    <script>
+    function updatePlot(event) { <!-- adding event, form id-->
+        // Prevent the form from performing a hard page reload
+        if (event) event.preventDefault();
+
+        // 1. Get values from HTML input fields
+        const rawValues = document.getElementById("dataInput").value;
+        const rawTitle = document.getElementById("titleInput").value;
+
+        // 2. Safely encode the parameters for the URL
+        const encodedValues = encodeURIComponent(rawValues);
+        const encodedTitle = encodeURIComponent(rawTitle);
+
+        // 3. Build the full Plumber API URL
+        const finalUrl = `http://127.0.0.1:8000/vector-plot?values=${encodedValues}&title=${encodedTitle}`;
+
+        // 4. Update the img src attribute inside the div to trigger the fetch
+        document.getElementById("dynamicPlot").src = finalUrl;
+    }
+
+    // Optional: Load an initial plot automatically on page load
+    window.onload = updatePlot;
+    </script>
+
+</body>
+</html>
