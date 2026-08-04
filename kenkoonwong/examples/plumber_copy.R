@@ -32,10 +32,52 @@ function(values = "1,2,3,4,5", title = "Default Plot Title", plot = "scatter") {
       xlab = "Index"
     )
     grid() # Add a subtle background grid
-  } else {
+  } 
+  #else {
     # Fallback error plot if user inputs invalid data
-    plot(1, 1, type = "n", xaxt = "n", yaxt = "n", xlab = "", ylab = "", 
-         main = "Error: No valid numeric data provided")
-  }
-}
+    #plot(1, 1, type = "n", xaxt = "n", yaxt = "n", xlab = "", ylab = "", 
+         #main = "Error: No valid numeric data provided")
+  #}
 
+
+
+else if (plot == "line") {
+    plot(x_vals, vals, main = "Line Chart", xlab = "Index", ylab = "Value", 
+         col = "red", type = "l", lwd = 3.3,lty=2,cex=2.3,# ,
+         xlim = c(0.5, length(vals) + 0.5))
+    grid()
+         ######################
+  } else if (plot == "hist") {
+    from=min(vals)
+    to=max(vals)
+    by=max(vals)/length(vals) # length.out=sum(vals)/length(vals)
+    brks=seq(from,to,by)
+    hist(vals,breaks=brks, main = "Histogram", xlab = "Value", col = "lightblue", 
+         border = "black")
+    abline(v=c(mean(vals),median(vals)),lty=c(2,3),lwd=2)
+    legend("topright",legend=c("mean","median"),lty=c(2,3),lwd=2)
+    grid()
+  } else if (plot == "density"){
+    dens <- density(vals)
+
+  # Plot density curve
+  plot(dens,
+     main = "Density Plot (Base R)",
+     xlab = "Value",
+     ylab = "Density",
+     col = "blue",
+     lwd = 3)
+    grid()
+  # Add a rug plot to show actual data points
+  rug(vals, col = "darkgray")
+
+  }
+    else if (plot == "stripchart"){
+      stripchart(vals)
+      grid()
+    }
+    else if (plot == "boxplot"){
+      boxplot(vals)
+      grid()
+    }
+}

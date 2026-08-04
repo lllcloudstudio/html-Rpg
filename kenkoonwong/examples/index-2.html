@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>R Plumber API Plot Loader</title>
+</head>
+<body>
+
+    <form id="plotForm" onsubmit="updatePlot(event)">
+        <label for="dataInput">Data Values (comma-separated):</label>
+        <input type="text" id="dataInput" value="10,25,8,44,30" required>
+        <br><br>
+
+        <label for="titleInput">Plot Title:</label>
+        <input type="text" id="titleInput" value="Live API Data" required>
+        <br><br>
+        
+        <!-- Dropdown Menu Replacing the Text Input -->
+        <label for="plotType">Plot Type:</label> 
+        <select id="plotType" required>
+            <option value="scatter">Scatter Plot</option>
+            <option value="line">Line Chart</option>
+            <option value="hist">Histogram</option>
+            <option value="density">Density Plot</option>
+            <option value="stripchart">Stripchart</option>
+            <option value="boxplot">Boxplot</option>
+        </select>
+        <br><br>
+
+        <button type="submit">Generate Plot</button>
+    </form>
+
+    <br>
+
+    <div id="plotContainer">
+        <h3>R Generated Output:</h3>
+        <img id="dynamicPlot" src="" alt="Plot will appear here..." style="max-width:100%; height:auto;"/>
+    </div>
+
+    <script>
+    function updatePlot(event) {
+        if (event && typeof event.preventDefault === 'function') {
+            event.preventDefault();
+        }
+
+        const rawValues = document.getElementById("dataInput").value;
+        const rawTitle = document.getElementById("titleInput").value; 
+        const rawPlotType = document.getElementById("plotType").value; // Gets the chosen option's value
+
+        const encodedValues = encodeURIComponent(rawValues);
+        const encodedTitle = encodeURIComponent(rawTitle);
+        const encodedPlotType = encodeURIComponent(rawPlotType); 
+
+        <!-- Swapped &plot= out for &type= -->
+        const finalUrl = `http://127.0.0{encodedValues}&title=${encodedTitle}&type=${encodedPlotType}`; 
+
+        document.getElementById("dynamicPlot").src = finalUrl;
+    }
+
+    window.onload = function() { updatePlot(null); };
+    </script>
+
+</body>
+</html>

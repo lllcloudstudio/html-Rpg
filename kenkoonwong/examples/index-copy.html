@@ -10,12 +10,15 @@
     <form id="plotForm" onsubmit="updatePlot(event)">
         <label for="dataInput">Data Values (comma-separated):</label>
         <input type="text" id="dataInput" value="10,25,8,44,30" required>
-        <br><br>
+        <br>
 
         <label for="titleInput">Plot Title:</label>
-        <input type="text" id="titleInput" value="Live API Data">
-        <br><br>
-
+        <input type="text" id="titleInput" value="Live API Data" required> <!--# added required attribute-->
+        <br>
+        
+        <label for="plotType">Plot Type:</label> <!-- add -->
+        <input type="text" id="plotType" value="scatter" required>
+        <br>
         <button type="submit">Generate Plot</button>
     </form>
 
@@ -35,14 +38,15 @@
 
         // 1. Get values from HTML input fields
         const rawValues = document.getElementById("dataInput").value;
-        const rawTitle = document.getElementById("titleInput").value;
+        const rawTitle = document.getElementById("titleInput").value; // add const for plotType
+        const rawPlotType = document.getElementById("plotType").value; // added
 
         // 2. Safely encode the parameters for the URL
         const encodedValues = encodeURIComponent(rawValues);
         const encodedTitle = encodeURIComponent(rawTitle);
-
+        const encodedPlotType = encodeURIComponent(rawPlotType); // added
         // 3. Build the full Plumber API URL
-        const finalUrl = `http://127.0.0.1:8000/vector-plot?values=${encodedValues}&title=${encodedTitle}`;
+        const finalUrl = `http://127.0.0.1:8000/vector-plot?values=${encodedValues}&title=${encodedTitle}&plot=${encodedPlotType}`; // added plotType
 
         // 4. Update the img src attribute inside the div to trigger the fetch
         document.getElementById("dynamicPlot").src = finalUrl;
