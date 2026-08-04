@@ -34,15 +34,7 @@ function(db_name = "reference") { # default since no form to specify ok-- now in
   paste(tables, collapse = ", ")
 }
 
-
-
-
-
-
-
-
 #* @apiTitle Dynamic R Vector Plotter API
-
 #* Plot a single vector of numbers with a custom title
 #* @param values A comma-separated string of numbers (e.g., “10,20,30”)
 #* @param title A single text string for the main plot header
@@ -85,8 +77,8 @@ function(values = "1,2,3,4,5", title = "Default Plot Title", plot = "scatter") {
 
 
 else if (plot == "line") {
-    plot(x_vals, vals, main = "Line Chart", xlab = "Index", ylab = "Value", 
-         col = "red", type = "l", lwd = 3.3,lty=2,cex=2.3,# ,
+    plot(x_vals, vals, main = "Line Chart", xlab = "Index", ylab = "Value", # main = title,
+         col = "red", type = "l", lwd = 3.3,lty=2,cex=2.3,#  col red line
          xlim = c(0.5, length(vals) + 0.5))
     grid()
          ######################
@@ -95,7 +87,7 @@ else if (plot == "line") {
     to=max(vals)
     by=max(vals)/length(vals) # length.out=sum(vals)/length(vals)
     brks=seq(from,to,by)
-    hist(vals,breaks=brks, main = "Histogram", xlab = "Value", col = "lightblue", 
+    hist(vals,breaks=brks, main = "Histogram", xlab = "Value", col = "lightblue", # main = title, col bg 
          border = "black")
     abline(v=c(mean(vals),median(vals)),lty=c(2,3),lwd=2)
     legend("topright",legend=c("mean","median"),lty=c(2,3),lwd=2)
@@ -105,10 +97,10 @@ else if (plot == "line") {
 
   # Plot density curve
   plot(dens,
-     main = "Density Plot (Base R)",
+     main = "Density Plot (Base R)", # main = title,
      xlab = "Value",
      ylab = "Density",
-     col = "blue",
+     col = "blue", # col line
      lwd = 3)
     grid()
   # Add a rug plot to show actual data points
@@ -116,11 +108,11 @@ else if (plot == "line") {
 
   }
     else if (plot == "stripchart"){
-      stripchart(vals)
+      stripchart(vals) # method = "stack",pch=19,col="lightblue",add=TRUE like rug()
       grid()
     }
     else if (plot == "boxplot"){
-      boxplot(vals)
+      boxplot(vals) # horizontal=TRUE,notch=TRUE,las=2,col="lightblue",border="grey20"
       grid()
     }
 }
