@@ -5,7 +5,64 @@
     <title>R Plumber API Plot Loader</title>
 </head>
 <body>
+<h1> View List of Reference tables</h1>
 
+    <form id="form1">
+    <label for="db_id">Database Name:</label><br>
+    <input type="text" id="db_id" name="db_id" required placeholder="e.g., reference"><br><br>
+    <input type="submit" value="View Tables">
+    </form>
+
+    <p id="my-database-tables">Fetching data from API...</p>
+
+    <script>
+        // Define the target database file
+        // Not a form 
+        document.getElementById("form1").addEventListener("submit", function(event) {
+            event.preventDefault(); // Stop page from reloading
+        //const dbName = "reference";
+        const dbName= document.getElementById("db_id").value; // No: http://127.0.0.1:8000/?db_id=reference
+        // Append the parameter directly to the GET URL string
+        const apiUrl = "http://localhost:8000/tables?db_name=${encodeURIComponent(dbName)}";
+        // 1. Execute the GET request
+        fetch(apiUrl, 
+{ method: "GET" })
+            //.then and .catch can be added after fetch if req
+            // 2. 
+            .then(response => response.text()) // known response not json: the response is text
+            .then(textData => { //know textData and input placement define below;  data not response
+                // Display the comma-separated string directly into the <p> tag
+                //textData=document.getElementById("my-database-tables").innerText;
+                document.getElementById("my-database-tables").innerText = textData; // apidata def
+            })
+            //3.
+            .catch(error => { //.catch error 
+                console.error("Error fetching tables:", error);
+                document.getElementById("my-database-tables").innerText = "Error loading tables.";
+            });
+            }); // form 
+        // Define the target database file
+        //const dbName = "reference";
+        
+        // Append the parameter directly to the GET URL string
+        //const apiUrl = "http://localhost:8000/tables?db_name=${encodeURIComponent(dbName)}";
+
+        // Execute the GET request
+        //fetch(apiUrl, { method: "GET" })
+            //.then(response => response.text())
+            //.then(textData => {
+                // Display the comma-separated string directly into the <p> tag
+                //document.getElementById("my-database-tables").innerText = textData;
+            //})
+            //.catch(error => {
+                //console.error("Error fetching tables:", error);
+                //document.getElementById("my-database-tables").innerText = "Error loading tables.";
+            //});
+    </script>
+
+
+
+    <h1>R Plumber API Plot Loader</h1>
     <!-- 1. Form wrapping the inputs -->
     <form id="plotForm" onsubmit="updatePlot(event)">
         <label for="dataInput">Data Values (comma-separated):</label>
@@ -55,6 +112,42 @@
     // Optional: Load an initial plot automatically on page load
     window.onload = updatePlot;
     </script>
+
+
+    <h2>Run SQL Query and Download CSV</h2>
+
+
+    <input type="text" id="sqlQuery" placeholder="Enter SQL query" style="width:400px;">
+    <button id="downloadBtn">Download CSV</button> 
+
+    <button id= "viewTable" onclick="executeQuery"> View Table </button> <!-- not id="sqlQuery" -->
+
+    <script>
+        document.getElementById("downloadBtn").addEventListener("click", function() {
+            // 
+            const query = document.getElementById("sqlQuery").value.trim();
+            // Encode query for URL
+            const encodedQuery = encodeURIComponent(query);
+            // Trigger file download
+            window.location.href = `http://localhost:8000/download?query=${encodedQuery}`;
+        });
+    </script>
+
+
+    <script>
+    // import {DataTable} from "simple-datatables";
+    document.getElementById("viewTable").addEventListener("click", function() {
+    const tableQuery = document.getElementById("sqlQuery").value.trim();
+    const encodedTableQuery = encodeURIComponent(tableQuery);
+    // ? download to downloadtablequery?
+    window.location.href = `http://localhost:8000/downloadtablequery?tableQuery=${encodedTableQuery}`;
+    });
+    </script>
+
+
+
+
+
 
 </body>
 </html>
