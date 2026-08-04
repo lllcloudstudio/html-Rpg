@@ -1,3 +1,6 @@
+library(plumber)
+library(RMySQL)
+library(DBI)
 
 #* Enable CORS so your frontend can talk to the API
 #* @filter cors
