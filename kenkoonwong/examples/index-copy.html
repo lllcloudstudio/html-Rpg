@@ -119,7 +119,6 @@
 
     <input type="text" id="sqlQuery" placeholder="Enter SQL query" style="width:400px;">
     <button id="downloadBtn">Download CSV</button> 
-
     <button id= "viewTable" onclick="executeQuery"> View Table </button> <!-- not id="sqlQuery" -->
 
     <script>
@@ -132,8 +131,6 @@
             window.location.href = `http://localhost:8000/download?query=${encodedQuery}`;
         });
     </script>
-
-
     <script>
     // import {DataTable} from "simple-datatables";
     document.getElementById("viewTable").addEventListener("click", function() {
