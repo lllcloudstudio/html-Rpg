@@ -1,0 +1,767 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Daily Dashboard</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --panel:#0f1733;
+      --panel2:#101a3a;
+      --text:#e8ecff;
+      --muted:#a7b0d9;
+      --border:rgba(255,255,255,.10);
+      --accent:#7aa2ff;
+      --good:#37d67a;
+      --warn:#ffcc66;
+      --bad:#ff5c5c;
+      --chip:#18214a;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1100px 700px at 20% 0%, rgba(122,162,255,.20), transparent 60%),
+                  radial-gradient(900px 650px at 80% 10%, rgba(55,214,122,.14), transparent 55%),
+                  radial-gradient(900px 650px at 60% 90%, rgba(255,92,92,.12), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      min-height:100vh;
+    }
+    header{
+      padding:20px 18px 10px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      max-width:1200px;
+      margin:0 auto;
+    }
+    .title{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .title h1{
+      margin:0;
+      font-size:22px;
+      letter-spacing:.2px;
+      font-weight:700;
+    }
+    .subtitle{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.3;
+    }
+    .top-right{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      align-items:center;
+    }
+    .pill{
+      padding:8px 10px;
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--border);
+      border-radius:999px;
+      font-size:12px;
+      color:var(--muted);
+      display:flex;
+      gap:8px;
+      align-items:center;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+    .pill strong{color:var(--text); font-weight:700}
+    main{
+      max-width:1200px;
+      margin:0 auto;
+      padding:10px 18px 24px;
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:14px;
+    }
+    @media (max-width: 980px){
+      main{grid-template-columns:1fr}
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+      border:1px solid var(--border);
+      border-radius:16px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card header{
+      padding:14px 14px 10px;
+      max-width:none;
+      margin:0;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .card header h2{
+      font-size:14px;
+      margin:0;
+      color:var(--text);
+      font-weight:700;
+      letter-spacing:.2px;
+    }
+    .card header .hint{
+      color:var(--muted);
+      font-size:12px;
+    }
+    .card .body{
+      padding:14px;
+    }
+    .grid-2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+    @media (max-width: 980px){
+      .grid-2{grid-template-columns:1fr}
+    }
+    textarea, input[type="text"], input[type="datetime-local"]{
+      width:100%;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.20);
+      color: var(--text);
+      outline:none;
+    }
+    textarea{min-height:170px; resize:vertical; line-height:1.45}
+    .row{display:flex; gap:10px; align-items:center}
+    .row > *{flex:1}
+    button{
+      cursor:pointer;
+      border:none;
+      border-radius:12px;
+      padding:10px 12px;
+      background: rgba(122,162,255,.18);
+      color: var(--text);
+      border:1px solid rgba(122,162,255,.35);
+      font-weight:650;
+    }
+    button.secondary{
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      color: var(--muted);
+      font-weight:650;
+    }
+    button.danger{
+      background: rgba(255,92,92,.16);
+      border:1px solid rgba(255,92,92,.35);
+    }
+    .list{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      margin:0;
+      padding:0;
+      list-style:none;
+    }
+    .item{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      padding:10px 10px;
+      border-radius:14px;
+      background: rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .item .left{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      min-width:0;
+    }
+    .item .title{
+      font-size:13px;
+      line-height:1.25;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .item .meta{
+      color:var(--muted);
+      font-size:12px;
+    }
+    .tag{
+      font-size:11px;
+      padding:4px 8px;
+      border-radius:999px;
+      background: var(--chip);
+      border:1px solid rgba(255,255,255,.10);
+      color: var(--muted);
+      white-space:nowrap;
+      align-self:flex-start;
+    }
+    .tag.bad{ color: var(--bad); border-color: rgba(255,92,92,.35); background: rgba(255,92,92,.12); }
+    .tag.warn{ color: var(--warn); border-color: rgba(255,204,102,.35); background: rgba(255,204,102,.10); }
+    .tag.good{ color: var(--good); border-color: rgba(55,214,122,.35); background: rgba(55,214,122,.10); }
+
+    /* Event state visuals */
+    .event-upcoming .title{ font-weight: 650; }
+    .event-approaching .title{ font-weight: 900; } /* boldened within 24h */
+    .event-missed{
+      border-color: rgba(255,92,92,.45);
+      background: rgba(255,92,92,.10);
+    }
+    .event-missed .title{ color: #ffd0d0; font-weight: 900; }
+    .event-missed .meta{ color: rgba(255,208,208,.8); }
+
+    footer{
+      max-width:1200px;
+      margin:0 auto;
+      padding:0 18px 22px;
+      color:var(--muted);
+      font-size:12px;
+    }
+    code.inline{background:rgba(255,255,255,.08); padding:2px 6px; border-radius:8px; border:1px solid rgba(255,255,255,.10)}
+  </style>
+</head>
+<body>
+<header>
+  <div class="title">
+    <h1>Daily Dashboard</h1>
+    <div class="subtitle">
+      Notes + reminders + Google Calendar (OAuth). Approaching (≤24h) is bold. Missed is red. Auto-updates.
+    </div>
+  </div>
+  <div class="top-right">
+    <div class="pill"><span>Now</span> <strong id="nowText">—</strong></div>
+    <div class="pill"><span>Refresh</span> <strong id="refreshText">60s</strong></div>
+  </div>
+</header>
+
+<main>
+  <!-- Left column -->
+  <section class="card">
+    <header>
+      <h2>Daily Notes</h2>
+      <span class="hint">Manual • Saved per day in this browser</span>
+    </header>
+    <div class="body">
+      <div class="row" style="margin-bottom:10px;">
+        <div class="pill" style="box-shadow:none;">
+          <span>Date</span> <strong id="dateKeyText">—</strong>
+        </div>
+        <button id="clearNotesBtn" class="secondary" title="Clears only today's notes">Clear today</button>
+      </div>
+      <textarea id="notes" placeholder="Write today’s notes here..."></textarea>
+      <div class="row" style="margin-top:10px;">
+        <button id="saveNotesBtn">Save notes</button>
+        <span class="hint" id="notesSavedHint" style="text-align:right;">Not saved yet</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Right column stack -->
+  <section class="card">
+    <header>
+      <h2>Reminders</h2>
+      <span class="hint">Manual • Overdue turns red</span>
+    </header>
+    <div class="body">
+      <div class="grid-2" style="margin-bottom:10px;">
+        <input id="remTitle" type="text" placeholder="Reminder title" />
+        <input id="remDue" type="datetime-local" />
+      </div>
+      <div class="row" style="margin-bottom:12px;">
+        <button id="addReminderBtn">Add reminder</button>
+        <button id="clearRemindersBtn" class="secondary">Clear all</button>
+      </div>
+      <ul id="remList" class="list"></ul>
+    </div>
+  </section>
+
+  <section class="card" style="grid-column: 1 / -1;">
+    <header>
+      <h2>Appointments (Google Calendar)</h2>
+      <span class="hint">OAuth • Auto-styles by time</span>
+    </header>
+    <div class="body">
+      <div class="row" style="margin-bottom:12px; flex-wrap:wrap;">
+        <button id="gcalSignInBtn">Sign in to Google</button>
+        <button id="gcalSignOutBtn" class="secondary">Sign out</button>
+        <button id="gcalReloadBtn" class="secondary">Reload events</button>
+        <div class="pill" style="box-shadow:none;">
+          <span>Status</span> <strong id="gcalStatus">Not connected</strong>
+        </div>
+      </div>
+
+      <div class="subtitle" style="margin-bottom:12px;">
+        Setup required: add your Google OAuth Client ID + API key in the <code class="inline">CONFIG</code> section in this file.
+        Until then, sample events will display so you can verify the bold/red rules.
+      </div>
+
+      <ul id="eventList" class="list"></ul>
+    </div>
+  </section>
+</main>
+
+<footer>
+  Time rules: “Approaching” = starts within the next 24 hours (updates continuously). “Missed” depends on your choice (start vs end) — I’ll finalize once you reply.
+</footer>
+
+<script>
+/**
+ * =========================
+ * CONFIG — YOU MUST EDIT
+ * =========================
+ * For option A (Google Calendar API / OAuth), you typically need:
+ * - Google API key (for Calendar API access)
+ * - OAuth Client ID (Web)
+ *
+ * Steps (high level):
+ * 1) Google Cloud Console -> create project
+ * 2) Enable "Google Calendar API"
+ * 3) Create credentials:
+ *    - API key
+ *    - OAuth Client ID (Web application)
+ * 4) Add Authorized JavaScript origins:
+ *    - http://127.0.0.1:5500  (and/or http://localhost:5500 depending on Live Server)
+ * 5) Add Authorized redirect URIs if needed by your auth flow
+ *
+ * NOTE: There are multiple ways to do OAuth in pure front-end. The most common
+ * is using Google Identity Services + calling the Calendar REST API with an access token.
+ */
+const CONFIG = {
+  refreshSeconds: 60,           // styling refresh cadence (switches hour-to-hour, minute-to-minute)
+  approachingWindowHours: 24,   // bold within next 24h
+  missedRule: "end",            // "start" or "end" — I’ll adjust after you answer
+  timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+
+  // Google
+  googleApiKey: "PASTE_API_KEY_HERE",
+  googleClientId: "PASTE_OAUTH_CLIENT_ID_HERE",
+  calendarId: "primary",        // "primary" or a calendar ID/email
+  maxResults: 25
+};
+
+const els = {
+  nowText: document.getElementById("nowText"),
+  refreshText: document.getElementById("refreshText"),
+  dateKeyText: document.getElementById("dateKeyText"),
+
+  notes: document.getElementById("notes"),
+  saveNotesBtn: document.getElementById("saveNotesBtn"),
+  clearNotesBtn: document.getElementById("clearNotesBtn"),
+  notesSavedHint: document.getElementById("notesSavedHint"),
+
+  remTitle: document.getElementById("remTitle"),
+  remDue: document.getElementById("remDue"),
+  addReminderBtn: document.getElementById("addReminderBtn"),
+  clearRemindersBtn: document.getElementById("clearRemindersBtn"),
+  remList: document.getElementById("remList"),
+
+  eventList: document.getElementById("eventList"),
+  gcalSignInBtn: document.getElementById("gcalSignInBtn"),
+  gcalSignOutBtn: document.getElementById("gcalSignOutBtn"),
+  gcalReloadBtn: document.getElementById("gcalReloadBtn"),
+  gcalStatus: document.getElementById("gcalStatus")
+};
+
+function pad2(n){ return String(n).padStart(2,"0"); }
+function ymd(d){
+  return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+}
+function formatDateTime(d){
+  return d.toLocaleString(undefined, { weekday:"short", month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+}
+function msHours(h){ return h*60*60*1000; }
+
+function storageKeyToday(prefix){
+  return `${prefix}:${ymd(new Date())}`;
+}
+
+/** =========================
+ * Notes (manual, per day)
+ * ========================= */
+function loadNotes(){
+  const key = storageKeyToday("notes");
+  els.dateKeyText.textContent = ymd(new Date());
+  els.notes.value = localStorage.getItem(key) || "";
+  els.notesSavedHint.textContent = "Loaded";
+}
+function saveNotes(){
+  const key = storageKeyToday("notes");
+  localStorage.setItem(key, els.notes.value);
+  els.notesSavedHint.textContent = `Saved at ${new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"})}`;
+}
+function clearNotes(){
+  const key = storageKeyToday("notes");
+  localStorage.removeItem(key);
+  els.notes.value = "";
+  els.notesSavedHint.textContent = "Cleared";
+}
+
+/** =========================
+ * Reminders (manual, persistent list)
+ * ========================= */
+function loadReminders(){
+  const raw = localStorage.getItem("reminders:v1");
+  try { return raw ? JSON.parse(raw) : []; } catch { return []; }
+}
+function saveReminders(reminders){
+  localStorage.setItem("reminders:v1", JSON.stringify(reminders));
+}
+function addReminder(){
+  const title = els.remTitle.value.trim();
+  const due = els.remDue.value;
+  if(!title) return;
+
+  const reminders = loadReminders();
+  reminders.unshift({
+    id: crypto.randomUUID(),
+    title,
+    due: due ? new Date(due).toISOString() : null,
+    done: false,
+    created: new Date().toISOString()
+  });
+  saveReminders(reminders);
+  els.remTitle.value = "";
+  els.remDue.value = "";
+  renderReminders();
+}
+function toggleReminder(id){
+  const reminders = loadReminders();
+  const r = reminders.find(x => x.id === id);
+  if(!r) return;
+  r.done = !r.done;
+  saveReminders(reminders);
+  renderReminders();
+}
+function deleteReminder(id){
+  const reminders = loadReminders().filter(x => x.id !== id);
+  saveReminders(reminders);
+  renderReminders();
+}
+function clearAllReminders(){
+  localStorage.removeItem("reminders:v1");
+  renderReminders();
+}
+function reminderState(rem){
+  const now = new Date();
+  if(rem.done) return { cls:"", tag:{text:"Done", cls:"good"} };
+
+  if(rem.due){
+    const due = new Date(rem.due);
+    if(due < now) return { cls:"event-missed", tag:{text:"Overdue", cls:"bad"} };
+    const within24 = (due.getTime() - now.getTime()) <= msHours(24);
+    if(within24) return { cls:"event-approaching", tag:{text:"Due ≤24h", cls:"warn"} };
+    return { cls:"event-upcoming", tag:{text:"Scheduled", cls:""} };
+  }
+  return { cls:"", tag:{text:"No due", cls:""} };
+}
+function renderReminders(){
+  const reminders = loadReminders();
+  els.remList.innerHTML = "";
+  if(reminders.length === 0){
+    const li = document.createElement("li");
+    li.className = "subtitle";
+    li.textContent = "No reminders yet.";
+    els.remList.appendChild(li);
+    return;
+  }
+  for(const rem of reminders){
+    const st = reminderState(rem);
+    const li = document.createElement("li");
+    li.className = `item ${st.cls}`.trim();
+
+    const left = document.createElement("div");
+    left.className = "left";
+
+    const t = document.createElement("div");
+    t.className = "title";
+    t.textContent = rem.title;
+
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    meta.textContent = rem.due ? `Due: ${formatDateTime(new Date(rem.due))}` : "No due date";
+
+    left.appendChild(t);
+    left.appendChild(meta);
+
+    const right = document.createElement("div");
+    right.style.display = "flex";
+    right.style.gap = "8px";
+    right.style.alignItems = "center";
+
+    const tag = document.createElement("span");
+    tag.className = `tag ${st.tag.cls || ""}`.trim();
+    tag.textContent = st.tag.text;
+
+    const doneBtn = document.createElement("button");
+    doneBtn.className = "secondary";
+    doneBtn.textContent = rem.done ? "Undo" : "Done";
+    doneBtn.onclick = () => toggleReminder(rem.id);
+
+    const delBtn = document.createElement("button");
+    delBtn.className = "danger";
+    delBtn.textContent = "Delete";
+    delBtn.onclick = () => deleteReminder(rem.id);
+
+    right.appendChild(tag);
+    right.appendChild(doneBtn);
+    right.appendChild(delBtn);
+
+    li.appendChild(left);
+    li.appendChild(right);
+    els.remList.appendChild(li);
+  }
+}
+
+/** =========================
+ * Appointments (Google Calendar)
+ * ========================= */
+let cachedEvents = [];
+let accessToken = null;
+
+function eventState(evt){
+  // evt: {title, start, end, location?, htmlLink?}
+  const now = new Date();
+  const start = new Date(evt.start);
+  const end = new Date(evt.end);
+
+  const approachingMs = msHours(CONFIG.approachingWindowHours);
+  const isApproaching = (start.getTime() - now.getTime()) <= approachingMs && start > now;
+
+  const missed = (CONFIG.missedRule === "start")
+    ? (start < now)
+    : (end < now);
+
+  if(missed) return { cls:"event-missed", tag:{text:"Missed", cls:"bad"} };
+  if(isApproaching) return { cls:"event-approaching", tag:{text:"≤24h", cls:"warn"} };
+  if(start > now) return { cls:"event-upcoming", tag:{text:"Upcoming", cls:""} };
+  return { cls:"", tag:{text:"In progress", cls:"good"} };
+}
+
+function renderEvents(){
+  els.eventList.innerHTML = "";
+  const events = cachedEvents.slice().sort((a,b) => new Date(a.start) - new Date(b.start));
+
+  if(events.length === 0){
+    const li = document.createElement("li");
+    li.className = "subtitle";
+    li.textContent = "No events loaded. Sign in or configure Google credentials.";
+    els.eventList.appendChild(li);
+    return;
+  }
+
+  for(const evt of events){
+    const st = eventState(evt);
+    const li = document.createElement("li");
+    li.className = `item ${st.cls}`.trim();
+
+    const left = document.createElement("div");
+    left.className = "left";
+
+    const t = document.createElement("div");
+    t.className = "title";
+    t.textContent = evt.title || "(No title)";
+
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    meta.textContent = `${formatDateTime(new Date(evt.start))} → ${formatDateTime(new Date(evt.end))}${evt.location ? " • " + evt.location : ""}`;
+
+    left.appendChild(t);
+    left.appendChild(meta);
+
+    const right = document.createElement("div");
+    right.style.display = "flex";
+    right.style.gap = "8px";
+    right.style.alignItems = "center";
+
+    const tag = document.createElement("span");
+    tag.className = `tag ${st.tag.cls || ""}`.trim();
+    tag.textContent = st.tag.text;
+
+    right.appendChild(tag);
+
+    li.appendChild(left);
+    li.appendChild(right);
+    els.eventList.appendChild(li);
+  }
+}
+
+/**
+ * Google OAuth + Calendar fetch (placeholder implementation)
+ *
+ * This file intentionally keeps the OAuth wiring minimal and readable.
+ * When you're ready, I can tailor this section to whichever auth approach you prefer:
+ * - Google Identity Services token client
+ * - OAuth implicit flow
+ *
+ * For now, it:
+ * - checks if CONFIG keys are filled
+ * - otherwise uses sample events
+ */
+function loadSampleEvents(){
+  const now = new Date();
+  cachedEvents = [
+    {
+      title: "Sample: In 6 hours (approaching)",
+      start: new Date(now.getTime() + msHours(6)).toISOString(),
+      end: new Date(now.getTime() + msHours(7)).toISOString(),
+      location: "—"
+    },
+    {
+      title: "Sample: Tomorrow (still ≤24h depending on time)",
+      start: new Date(now.getTime() + msHours(20)).toISOString(),
+      end: new Date(now.getTime() + msHours(21)).toISOString(),
+      location: "—"
+    },
+    {
+      title: "Sample: Yesterday (missed)",
+      start: new Date(now.getTime() - msHours(26)).toISOString(),
+      end: new Date(now.getTime() - msHours(25)).toISOString(),
+      location: "—"
+    }
+  ];
+  
+  renderEvents();
+}
+
+function googleConfigured(){
+  return CONFIG.googleApiKey && CONFIG.googleClientId &&
+         !CONFIG.googleApiKey.includes("PASTE_") &&
+         !CONFIG.googleClientId.includes("PASTE_");
+}
+
+async function reloadGoogleEvents(){
+  if(!googleConfigured() || !accessToken){
+    loadSampleEvents();
+    return;
+  }
+
+  // Calendar API: https://developers.google.com/calendar/api/v3/reference/events/list
+  const timeMin = new Date(Date.now() - msHours(24)).toISOString();
+  const timeMax = new Date(Date.now() + msHours(7*24)).toISOString();
+
+  const url = new URL(`https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CONFIG.calendarId)}/events`);
+  url.searchParams.set("timeMin", timeMin);
+  url.searchParams.set("timeMax", timeMax);
+  url.searchParams.set("singleEvents", "true");
+  url.searchParams.set("orderBy", "startTime");
+  url.searchParams.set("maxResults", String(CONFIG.maxResults));
+  url.searchParams.set("key", CONFIG.googleApiKey);
+
+  const res = await fetch(url.toString(), {
+    headers: { Authorization: `Bearer ${accessToken}` }
+  });
+
+  if(!res.ok){
+    els.gcalStatus.textContent = `Error (${res.status})`;
+    loadSampleEvents();
+    return;
+  }
+
+  const data = await res.json();
+  const items = Array.isArray(data.items) ? data.items : [];
+
+  cachedEvents = items
+    .filter(it => it.start && (it.start.dateTime || it.start.date) && it.end && (it.end.dateTime || it.end.date))
+    .map(it => {
+      // All-day events provide .date; convert to local midnight range
+      const startIso = it.start.dateTime ? it.start.dateTime : new Date(it.start.date + "T00:00:00").toISOString();
+      const endIso = it.end.dateTime ? it.end.dateTime : new Date(it.end.date + "T00:00:00").toISOString();
+      return {
+  eventId: it.id, // stable Google event id
+  title: it.summary || "(No title)",
+  start: startIso,
+  end: endIso,
+  location: it.location || "",
+  htmlLink: it.htmlLink || ""
+};
+    });
+
+  els.gcalStatus.textContent = "Connected";
+  renderEvents();
+}
+
+/**
+ * OAuth wiring placeholder.
+ * Replace signIn() to obtain an access token and store it in `accessToken`.
+ */
+async function signIn(){
+  if(!googleConfigured()){
+    els.gcalStatus.textContent = "Add API key + Client ID";
+    loadSampleEvents();
+    return;
+  }
+
+  els.gcalStatus.textContent = "OAuth not wired yet";
+  alert(
+    "OAuth wiring placeholder.\n\n" +
+    "Next step: tell me whether you want Google Identity Services (recommended).\n" +
+    "Then I’ll give you the exact sign-in code for this file."
+  );
+  loadSampleEvents();
+}
+function signOut(){
+  accessToken = null;
+  els.gcalStatus.textContent = "Signed out";
+  loadSampleEvents();
+}
+
+/** =========================
+ * Clock + periodic refresh
+ * ========================= */
+function tick(){
+  const now = new Date();
+  els.nowText.textContent = now.toLocaleString(undefined, { weekday:"short", month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit", second:"2-digit" });
+  // Re-render reminders + events so styling changes as time passes
+  renderReminders();
+  renderEvents();
+}
+function startTimers(){
+  els.refreshText.textContent = `${CONFIG.refreshSeconds}s`;
+  tick();
+  setInterval(tick, 1000);
+  setInterval(() => {
+    // refresh events list from Google (if connected)
+    reloadGoogleEvents();
+  }, CONFIG.refreshSeconds * 1000);
+}
+
+/** =========================
+ * Wire UI
+ * ========================= */
+els.saveNotesBtn.onclick = saveNotes;
+els.clearNotesBtn.onclick = clearNotes;
+
+els.addReminderBtn.onclick = addReminder;
+els.clearRemindersBtn.onclick = clearAllReminders;
+
+els.gcalSignInBtn.onclick = signIn;
+els.gcalSignOutBtn.onclick = signOut;
+els.gcalReloadBtn.onclick = reloadGoogleEvents;
+
+/** =========================
+ * Init
+ * ========================= */
+loadNotes();
+renderReminders();
+loadSampleEvents();
+startTimers();
+
+// Auto-save notes as you type (debounced)
+let notesTimer = null;
+els.notes.addEventListener("input", () => {
+  els.notesSavedHint.textContent = "Typing…";
+  clearTimeout(notesTimer);
+  notesTimer = setTimeout(() => saveNotes(), 600);
+});
+</script>
+</body>
+</html>
+​
+Now reply start or end for the missed-event rule, and I’ll tell you exactly what to change in the file (and I’ll also provide the Google Identity Services OAuth snippet to replace the placeholder signIn() so events actually load from your Google Calendar).

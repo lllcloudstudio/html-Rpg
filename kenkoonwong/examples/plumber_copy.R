@@ -1,7 +1,13 @@
 library(plumber)
 library(RMySQL)
 library(DBI)
-
+library(ggplot2)
+library(knitr)
+library(kableExtra)
+library(dplyr)
+library(tidyverse)
+library(magrittr)
+library(readr)
 #* Enable CORS so your frontend can talk to the API
 #* @filter cors
 function(res) {
