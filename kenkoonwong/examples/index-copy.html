@@ -23,7 +23,8 @@
         //const dbName = "reference";
         const dbName= document.getElementById("db_id").value; // No: http://127.0.0.1:8000/?db_id=reference
         // Append the parameter directly to the GET URL string
-        const apiUrl = "http://localhost:8000/tables?db_name=${encodeURIComponent(dbName)}";
+        const apiUrl = "http://localhost:8000/tables?db_name=${encodeURIComponent(dbName)}"; // OR:
+        //const apiUrl = `http://localhost:8000/tables?db_name=${encodeURIComponent(dbName)}`;
         // 1. Execute the GET request
         fetch(apiUrl, 
 { method: "GET" })
